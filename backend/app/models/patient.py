@@ -6,10 +6,9 @@ from datetime import date, datetime
 from typing import Any
 
 from sqlalchemy import Date, DateTime, Float, ForeignKey, String, UniqueConstraint
-from sqlalchemy.dialects.postgresql import JSONB, UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base, TimestampMixin, UUIDPKMixin
+from app.db.base import Base, JSONField, TimestampMixin, UUIDPKMixin, UUIDType
 
 
 class Patient(UUIDPKMixin, TimestampMixin, Base):
@@ -19,7 +18,7 @@ class Patient(UUIDPKMixin, TimestampMixin, Base):
     )
 
     hospital_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("hospitals.id", ondelete="CASCADE"),
+        UUIDType, ForeignKey("hospitals.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
     mrn: Mapped[str] = mapped_column(String(40), nullable=False)
@@ -38,17 +37,17 @@ class Admission(UUIDPKMixin, TimestampMixin, Base):
     __tablename__ = "admissions"
 
     patient_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("patients.id", ondelete="CASCADE"),
+        UUIDType, ForeignKey("patients.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
     department_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("departments.id"), nullable=False, index=True,
+        UUIDType, ForeignKey("departments.id"), nullable=False, index=True,
     )
     admission_type: Mapped[str] = mapped_column(String(40), nullable=False)
     admitted_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
     discharged_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
     length_of_stay: Mapped[float | None] = mapped_column(Float, nullable=True)
-    clinical_features: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False, default=dict)
+    clinical_features: Mapped[dict[str, Any]] = mapped_column(JSONField, nullable=False, default=dict)
 
     patient: Mapped[Patient] = relationship(back_populates="admissions")
     predictions: Mapped[list["Prediction"]] = relationship(  # noqa: F821

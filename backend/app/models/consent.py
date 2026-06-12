@@ -5,17 +5,16 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import DateTime, ForeignKey, String
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db.base import Base, TimestampMixin, UUIDPKMixin
+from app.db.base import Base, TimestampMixin, UUIDPKMixin, UUIDType
 
 
 class ConsentRecord(UUIDPKMixin, TimestampMixin, Base):
     __tablename__ = "consent_records"
 
     patient_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("patients.id", ondelete="CASCADE"),
+        UUIDType, ForeignKey("patients.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
     consent_type: Mapped[str] = mapped_column(String(60), nullable=False)

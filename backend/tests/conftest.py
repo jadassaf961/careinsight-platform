@@ -13,6 +13,7 @@ import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from app import models  # noqa: F401 - ensure model registration
 from app.api.deps import get_current_user
@@ -30,6 +31,7 @@ from app.models.user import Role, RoleName, User
 TEST_ENGINE = create_engine(
     "sqlite+pysqlite:///:memory:",
     connect_args={"check_same_thread": False},
+    poolclass=StaticPool,  # one shared connection so :memory: persists across sessions
 )
 TestSession = sessionmaker(bind=TEST_ENGINE, autoflush=False, future=True)
 
@@ -80,7 +82,7 @@ def _make_user(db: Session, hospital: Hospital, role_name: RoleName) -> User:
         db.flush()
     user = User(
         hospital_id=hospital.id, role_id=role.id,
-        email=f"{role_name.value}@test.local", full_name=f"Test {role_name.value}",
+        email=f"{role_name.value}@example.com", full_name=f"Test {role_name.value}",
         password_hash=hash_password("Demo123!"), is_active=True,
     )
     db.add(user)

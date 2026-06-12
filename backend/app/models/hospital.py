@@ -4,10 +4,9 @@ from __future__ import annotations
 import uuid
 
 from sqlalchemy import ForeignKey, String, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base, TimestampMixin, UUIDPKMixin
+from app.db.base import Base, TimestampMixin, UUIDPKMixin, UUIDType
 
 
 class Hospital(UUIDPKMixin, TimestampMixin, Base):
@@ -27,7 +26,7 @@ class Department(UUIDPKMixin, TimestampMixin, Base):
     )
 
     hospital_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("hospitals.id", ondelete="CASCADE"), nullable=False
+        UUIDType, ForeignKey("hospitals.id", ondelete="CASCADE"), nullable=False
     )
     name: Mapped[str] = mapped_column(String(120), nullable=False)
     code: Mapped[str] = mapped_column(String(20), nullable=False)

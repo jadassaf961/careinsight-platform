@@ -5,23 +5,18 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import Boolean, Float, ForeignKey, Index, Integer, String, UniqueConstraint
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import expression
 
-from app.db.base import Base, TimestampMixin, UUIDPKMixin
+from app.db.base import Base, TimestampMixin, UUIDPKMixin, UUIDType
 
 
 class ModelVersion(UUIDPKMixin, TimestampMixin, Base):
     __tablename__ = "model_versions"
+    # Partial unique index on (is_active=true) lives in the Alembic migration —
+    # SQLite doesn't support `postgresql_where`, so we don't declare it here.
     __table_args__ = (
         UniqueConstraint("name", "version", name="uq_model_name_version"),
-        Index(
-            "uq_model_one_active",
-            "is_active",
-            unique=True,
-            postgresql_where=expression.text("is_active = true"),
-        ),
     )
 
     name: Mapped[str] = mapped_column(String(80), nullable=False)
@@ -38,11 +33,11 @@ class Prediction(UUIDPKMixin, TimestampMixin, Base):
     __tablename__ = "predictions"
 
     admission_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("admissions.id", ondelete="CASCADE"),
+        UUIDType, ForeignKey("admissions.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
     model_version_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("model_versions.id"), nullable=False, index=True,
+        UUIDType, ForeignKey("model_versions.id"), nullable=False, index=True,
     )
     probability: Mapped[float] = mapped_column(Float, nullable=False)
     risk_tier: Mapped[str] = mapped_column(String(20), nullable=False)
@@ -66,7 +61,7 @@ class RiskFactor(UUIDPKMixin, TimestampMixin, Base):
     )
 
     prediction_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("predictions.id", ondelete="CASCADE"),
+        UUIDType, ForeignKey("predictions.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
     feature_name: Mapped[str] = mapped_column(String(120), nullable=False)
@@ -81,7 +76,7 @@ class Recommendation(UUIDPKMixin, TimestampMixin, Base):
     __tablename__ = "recommendations"
 
     prediction_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("predictions.id", ondelete="CASCADE"),
+        UUIDType, ForeignKey("predictions.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
     text: Mapped[str] = mapped_column(String(500), nullable=False)

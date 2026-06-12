@@ -5,10 +5,9 @@ import enum
 import uuid
 
 from sqlalchemy import Boolean, Enum, ForeignKey, String
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from app.db.base import Base, TimestampMixin, UUIDPKMixin
+from app.db.base import Base, TimestampMixin, UUIDPKMixin, UUIDType
 
 
 class RoleName(str, enum.Enum):
@@ -33,10 +32,10 @@ class User(UUIDPKMixin, TimestampMixin, Base):
     __tablename__ = "users"
 
     hospital_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("hospitals.id", ondelete="CASCADE"), nullable=False
+        UUIDType, ForeignKey("hospitals.id", ondelete="CASCADE"), nullable=False
     )
     role_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("roles.id"), nullable=False
+        UUIDType, ForeignKey("roles.id"), nullable=False
     )
     email: Mapped[str] = mapped_column(String(255), nullable=False, unique=True, index=True)
     full_name: Mapped[str] = mapped_column(String(200), nullable=False)

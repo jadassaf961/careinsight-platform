@@ -6,10 +6,9 @@ import uuid
 from datetime import datetime
 
 from sqlalchemy import DateTime, Enum, ForeignKey, String
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db.base import Base, TimestampMixin, UUIDPKMixin
+from app.db.base import Base, TimestampMixin, UUIDPKMixin, UUIDType
 
 
 class InterventionStatus(str, enum.Enum):
@@ -23,14 +22,14 @@ class Intervention(UUIDPKMixin, TimestampMixin, Base):
     __tablename__ = "interventions"
 
     admission_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("admissions.id", ondelete="CASCADE"),
+        UUIDType, ForeignKey("admissions.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
     recommendation_id: Mapped[uuid.UUID | None] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("recommendations.id"), nullable=True,
+        UUIDType, ForeignKey("recommendations.id"), nullable=True,
     )
     recorded_by_user_id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True), ForeignKey("users.id"), nullable=False, index=True,
+        UUIDType, ForeignKey("users.id"), nullable=False, index=True,
     )
     status: Mapped[InterventionStatus] = mapped_column(
         Enum(InterventionStatus, name="intervention_status"), nullable=False

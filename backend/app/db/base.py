@@ -1,12 +1,22 @@
-"""SQLAlchemy declarative base + UUID/timestamp mixins."""
+"""SQLAlchemy declarative base + UUID/timestamp mixins.
+
+Uses cross-dialect types (`sa.Uuid`, `sa.JSON`) so the same models work against
+PostgreSQL in production and SQLite in tests.
+"""
 from __future__ import annotations
 
 import uuid
 from datetime import datetime
 
-from sqlalchemy import DateTime, func
-from sqlalchemy.dialects.postgresql import UUID as PG_UUID
+import sqlalchemy as sa
+from sqlalchemy import DateTime, JSON, func
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+
+
+# Cross-dialect type aliases: native UUID/JSONB on Postgres, fallback on SQLite.
+UUIDType = sa.Uuid(as_uuid=True)
+JSONField = JSON().with_variant(JSONB(), "postgresql")
 
 
 class Base(DeclarativeBase):
@@ -15,7 +25,7 @@ class Base(DeclarativeBase):
 
 class UUIDPKMixin:
     id: Mapped[uuid.UUID] = mapped_column(
-        PG_UUID(as_uuid=True),
+        UUIDType,
         primary_key=True,
         default=uuid.uuid4,
     )
