@@ -2,6 +2,7 @@ import { Link, NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "@/auth/AuthContext";
 
 const links = [
+  { to: "/ward", label: "Ward Risk View", roles: ["admin", "physician", "resident", "nurse", "case_manager", "analyst"] },
   { to: "/patients", label: "Patients", roles: ["admin", "physician", "resident", "nurse", "case_manager"] },
   { to: "/dashboard/clinician", label: "Clinician dashboard", roles: ["physician", "resident", "nurse"] },
   { to: "/dashboard/case-manager", label: "Case manager", roles: ["case_manager"] },
