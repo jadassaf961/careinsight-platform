@@ -63,6 +63,14 @@ export interface Patient {
   sex: string;
 }
 
+export interface PatientCreate {
+  mrn: string;
+  first_name: string;
+  last_name: string;
+  dob: string;
+  sex: string;
+}
+
 export interface PatientList {
   items: Patient[];
   total: number;
@@ -96,4 +104,41 @@ export interface Recommendation {
   text: string;
   category: string | null;
   source: string;
+}
+
+export interface PopulationPatientRow {
+  patient_id: string;
+  first_name: string;
+  last_name: string;
+  mrn: string;
+  department: string;
+  prediction_id: string;
+  probability: number;
+  risk_tier: string;
+  top_factor: string | null;
+}
+
+export interface PopulationResponse {
+  patients: PopulationPatientRow[];
+  high_count: number;
+  medium_count: number;
+  low_count: number;
+  total: number;
+}
+
+export interface FeatureImportanceItem {
+  feature_name: string;
+  humanized_label: string;
+  avg_importance: number;
+}
+
+export interface ModelStatsResponse {
+  algorithm: string;
+  version: string;
+  trained_at: string | null;
+  cv_auc: number | null;
+  test_auc: number | null;
+  total_predictions: number;
+  tier_distribution: { High: number; Medium: number; Low: number };
+  top_features: FeatureImportanceItem[];
 }
