@@ -82,11 +82,16 @@ def population(
     current: User = Depends(require_any_clinical_role()),
 ) -> PopulationResponse:
     """Return all currently admitted patients ranked by readmission risk, highest first."""
-    # Subquery: latest prediction timestamp per active admission in this hospital
-    latest_pred_sq = (
+    # Issue 1 fix: use ROW_NUMBER() window function to pick the single latest prediction
+    # per admission, breaking created_at ties deterministically (SQLite 3.25+ supports this).
+    rn_subq = (
         db.query(
-            Prediction.admission_id,
-            func.max(Prediction.created_at).label("latest_at"),
+            Prediction.id.label("pred_id"),
+            Prediction.admission_id.label("adm_id"),
+            func.row_number().over(
+                partition_by=Prediction.admission_id,
+                order_by=Prediction.created_at.desc(),
+            ).label("rn"),
         )
         .join(Admission, Admission.id == Prediction.admission_id)
         .join(Patient, Patient.id == Admission.patient_id)
@@ -95,17 +100,23 @@ def population(
             Patient.deleted_at.is_(None),
             Admission.discharged_at.is_(None),
         )
-        .group_by(Prediction.admission_id)
         .subquery()
     )
 
-    # Subquery: top risk factor (rank=1) per prediction
+    latest_pred_sq = (
+        db.query(rn_subq.c.pred_id, rn_subq.c.adm_id)
+        .filter(rn_subq.c.rn == 1)
+        .subquery()
+    )
+
+    # Issue 2 fix: aggregate rank-1 factors to guarantee one row per prediction
     top_factor_sq = (
         db.query(
             RiskFactor.prediction_id,
-            RiskFactor.humanized_label.label("top_factor"),
+            func.min(RiskFactor.humanized_label).label("top_factor"),
         )
         .filter(RiskFactor.rank == 1)
+        .group_by(RiskFactor.prediction_id)
         .subquery()
     )
 
@@ -123,12 +134,8 @@ def population(
         )
         .join(Admission, Admission.patient_id == Patient.id)
         .join(Department, Department.id == Admission.department_id)
-        .join(latest_pred_sq, latest_pred_sq.c.admission_id == Admission.id)
-        .join(
-            Prediction,
-            (Prediction.admission_id == Admission.id)
-            & (Prediction.created_at == latest_pred_sq.c.latest_at),
-        )
+        .join(latest_pred_sq, latest_pred_sq.c.adm_id == Admission.id)
+        .join(Prediction, Prediction.id == latest_pred_sq.c.pred_id)
         .outerjoin(top_factor_sq, top_factor_sq.c.prediction_id == Prediction.id)
         .filter(
             Patient.hospital_id == current.hospital_id,
