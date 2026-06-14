@@ -461,7 +461,7 @@ def seed_all(db: Session) -> None:
     db.flush()
 
     now = datetime.now(timezone.utc)
-    for i, row in enumerate(_PATIENTS):
+    for row in _PATIENTS:
         (mrn, first, last, dob, sex, dept_code,
          adm_type, los, features, prob, tier, factors) = row
 
