@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from uuid import UUID
 
 from pydantic import BaseModel
 
@@ -21,12 +22,12 @@ class ReadmissionStats(BaseModel):
 
 
 class PopulationPatientRow(BaseModel):
-    patient_id: str
+    patient_id: UUID
     first_name: str
     last_name: str
     mrn: str
     department: str
-    prediction_id: str
+    prediction_id: UUID
     probability: float
     risk_tier: str
     top_factor: str | None = None
