@@ -63,8 +63,10 @@ export function PatientChart() {
       const a = document.createElement("a");
       a.href = url;
       a.download = `careinsight_${patient.data?.mrn}.pdf`;
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+      setTimeout(() => URL.revokeObjectURL(url), 150);
     },
   });
 
@@ -78,15 +80,23 @@ export function PatientChart() {
       });
       return resp.reply;
     },
-    onSuccess: (reply, message) => {
-      setChat((c) => [...c, { role: "user", content: message },
-                            { role: "assistant", content: reply }]);
+    onMutate: (message) => {
+      setChat((c) => [...c, { role: "user", content: message }]);
+    },
+    onSuccess: (reply) => {
+      setChat((c) => [...c, { role: "assistant", content: reply }]);
+    },
+    onError: () => {
+      setChat((c) => [...c, {
+        role: "assistant",
+        content: "⚠️ Could not reach the AI assistant. Please try again.",
+      }]);
     },
   });
 
   function onAsk(e: FormEvent) {
     e.preventDefault();
-    if (!chatInput.trim()) return;
+    if (!chatInput.trim() || askAi.isPending) return;
     askAi.mutate(chatInput);
     setChatInput("");
   }
@@ -109,11 +119,19 @@ export function PatientChart() {
         </div>
         <div className="flex gap-2">
           <button
-            className="btn-secondary"
+            className="btn-secondary flex items-center gap-2"
             onClick={() => generatePrediction.mutate()}
             disabled={generatePrediction.isPending}
           >
-            {risk.data ? "Re-run prediction" : "Run prediction"}
+            {generatePrediction.isPending && (
+              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+              </svg>
+            )}
+            {generatePrediction.isPending
+              ? "Calculating…"
+              : risk.data ? "Re-run prediction" : "Run prediction"}
           </button>
           <button
             className="btn-primary"
@@ -128,12 +146,24 @@ export function PatientChart() {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <section className="card lg:col-span-1">
           <h2 className="font-semibold mb-3">Readmission risk</h2>
-          {risk.isError && (
+          {generatePrediction.isPending && (
+            <div className="space-y-2 animate-pulse">
+              <div className="h-24 bg-slate-100 rounded" />
+              <div className="h-4 bg-slate-100 rounded w-3/4" />
+              <div className="text-xs text-slate-400 text-center pt-1">Calculating risk…</div>
+            </div>
+          )}
+          {!generatePrediction.isPending && risk.isError && (
             <div className="text-sm text-slate-500">
               No prediction yet. Click <em>Run prediction</em>.
             </div>
           )}
-          {risk.data && (
+          {generatePrediction.error && (
+            <div className="text-sm text-red-600 mt-2">
+              {(generatePrediction.error as Error).message}
+            </div>
+          )}
+          {!generatePrediction.isPending && risk.data && (
             <>
               <RiskGauge
                 probability={risk.data.probability}
@@ -204,7 +234,7 @@ export function PatientChart() {
             )}
             {chat.map((t, i) => (
               <div key={i}
-                   className={`text-sm rounded-md px-3 py-2 ${
+                   className={`text-sm rounded-md px-3 py-2 whitespace-pre-wrap ${
                      t.role === "user"
                        ? "bg-brand-50 text-brand-700"
                        : "bg-slate-50 text-slate-800"
@@ -212,13 +242,22 @@ export function PatientChart() {
                 {t.content}
               </div>
             ))}
+            {askAi.isPending && (
+              <div className="bg-slate-50 rounded-md px-3 py-3 flex items-center gap-1.5">
+                <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" />
+              </div>
+            )}
           </div>
           <form onSubmit={onAsk} className="flex gap-2">
             <input
               value={chatInput} onChange={(e) => setChatInput(e.target.value)}
               placeholder="Ask why this patient is high risk…"
+              disabled={askAi.isPending}
               className="flex-1 px-3 py-2 text-sm border border-slate-300 rounded-md
-                         focus:outline-none focus:ring-2 focus:ring-brand-500"
+                         focus:outline-none focus:ring-2 focus:ring-brand-500
+                         disabled:opacity-50 disabled:cursor-not-allowed"
             />
             <button className="btn-primary text-sm" disabled={askAi.isPending}>
               Ask
