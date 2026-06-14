@@ -39,6 +39,7 @@ class PopulationResponse(BaseModel):
     medium_count: int
     low_count: int
     total: int
+    departments: list[str]
 
 
 class FeatureImportanceItem(BaseModel):

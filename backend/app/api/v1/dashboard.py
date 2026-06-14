@@ -150,6 +150,7 @@ def population(
     medium_count = sum(1 for r in all_rows if r.risk_tier == "Medium")
     low_count = sum(1 for r in all_rows if r.risk_tier == "Low")
     total = len(all_rows)
+    departments = sorted({r.department for r in all_rows})
 
     # Apply optional filters for displayed rows
     if department:
@@ -179,6 +180,7 @@ def population(
         medium_count=medium_count,
         low_count=low_count,
         total=total,
+        departments=departments,
     )
 
 

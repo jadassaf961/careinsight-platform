@@ -124,6 +124,7 @@ export interface PopulationResponse {
   medium_count: number;
   low_count: number;
   total: number;
+  departments: string[];
 }
 
 export interface FeatureImportanceItem {

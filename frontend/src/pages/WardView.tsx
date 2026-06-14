@@ -24,13 +24,7 @@ export function WardView() {
       api.get<PopulationResponse>(`/dashboard/population?${params.toString()}`),
   });
 
-  const allDepartments = [
-    ...new Set(
-      data?.patients
-        ? [...data.patients.map((p) => p.department)]
-        : []
-    ),
-  ].sort();
+  const allDepartments = data?.departments ?? [];
 
   return (
     <div>
