@@ -73,7 +73,7 @@ class TestPopulationEndpoint:
             db, hospital.id, dept.id, mv.id,
             "LOW001", "Low", "Risk", date(1990, 1, 1), 0.15, "Low",
         )
-        high_p, _, high_pred = _make_patient_with_prediction(
+        _, _, high_pred = _make_patient_with_prediction(
             db, hospital.id, dept.id, mv.id,
             "HIGH001", "High", "Risk", date(1950, 1, 1), 0.82, "High",
         )
@@ -169,7 +169,7 @@ class TestModelStatsEndpoint:
     ):
         dept = db.query(Department).filter(Department.hospital_id == hospital.id).first()
         mv = _make_model_version(db)
-        p, a, pred = _make_patient_with_prediction(
+        _, _, pred = _make_patient_with_prediction(
             db, hospital.id, dept.id, mv.id,
             "STAT001", "Stats", "Patient", date(1970, 1, 1), 0.70, "High",
         )
