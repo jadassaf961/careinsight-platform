@@ -4,6 +4,7 @@ import { api, PopulationResponse } from "@/lib/api";
 import { StatCard } from "@/components/clinical/StatCard";
 import { RiskBadge } from "@/components/clinical/RiskBadge";
 import { Card } from "@/components/core/Card";
+import { MyTasksWidget } from "@/components/clinical/MyTasksWidget";
 
 interface DashboardMetrics {
   total_patients: number;
@@ -47,6 +48,9 @@ export function ClinicianDashboard() {
         <h1 className="font-display text-2xl font-semibold text-navy-700">Clinician Dashboard</h1>
         <p className="text-sm text-slate-500 mt-1">Ward overview for today's admitted patients.</p>
       </div>
+
+      {/* Discharge tasks assigned to this clinician's role */}
+      <MyTasksWidget />
 
       {/* Stat row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -4,6 +4,7 @@ import { api, PopulationResponse } from "@/lib/api";
 import { StatCard } from "@/components/clinical/StatCard";
 import { RiskBadge } from "@/components/clinical/RiskBadge";
 import { Card } from "@/components/core/Card";
+import { EscalationQueue } from "@/components/clinical/EscalationQueue";
 
 interface DashboardMetrics {
   total_patients: number;
@@ -47,6 +48,9 @@ export function CaseManagerDashboard() {
         <h1 className="font-display text-2xl font-semibold text-navy-700">Case Manager Dashboard</h1>
         <p className="text-sm text-slate-500 mt-1">Monitor high and medium-risk patients before discharge.</p>
       </div>
+
+      {/* Post-discharge escalations — the primary worklist */}
+      <EscalationQueue />
 
       {/* Stat row */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">

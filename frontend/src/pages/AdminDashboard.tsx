@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api, ModelStatsResponse } from "@/lib/api";
+import { OutcomesPanel } from "@/components/clinical/OutcomesPanel";
 
 export function AdminDashboard() {
   const stats = useQuery({
@@ -37,6 +38,9 @@ export function AdminDashboard() {
         </div>
       </div>
 
+      <div className="mb-6">
+        <OutcomesPanel />
+      </div>
       <RoiCalculator />
       <ModelTransparency data={modelStats.data} isLoading={modelStats.isLoading} />
 
@@ -53,12 +57,17 @@ function RoiCalculator() {
   const [readmissionRate, setReadmissionRate] = useState(13);
   const [costPerReadmission, setCostPerReadmission] = useState(5000);
 
+  const PRICE_PER_BED_MONTH = 12; // USD — mid-point of $8–15/bed/month
+
   const annualReadmissions = Math.round((monthlyAdmissions * 12 * readmissionRate) / 100);
   const highRiskCount = Math.round(annualReadmissions * 0.3);
   const preventedLow = Math.round(highRiskCount * 0.15);
   const preventedHigh = Math.round(highRiskCount * 0.20);
   const savingsLow = preventedLow * costPerReadmission;
   const savingsHigh = preventedHigh * costPerReadmission;
+  const annualPlatformCost = beds * PRICE_PER_BED_MONTH * 12;
+  const netLow = savingsLow - annualPlatformCost;
+  const netHigh = savingsHigh - annualPlatformCost;
 
   return (
     <div className="card mb-6">
@@ -135,6 +144,25 @@ function RoiCalculator() {
           <div className="text-2xl font-bold mt-1 text-green-600">
             ${savingsLow.toLocaleString()} – ${savingsHigh.toLocaleString()}
           </div>
+        </div>
+      </div>
+
+      <div className="mt-4 border-t border-slate-100 pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <div className="text-xs uppercase tracking-wide text-slate-500">Platform cost</div>
+          <div className="text-lg font-bold mt-1">
+            ${annualPlatformCost.toLocaleString()}<span className="text-sm font-normal text-slate-500">/yr</span>
+          </div>
+          <div className="text-xs text-slate-400 mt-0.5">
+            ${PRICE_PER_BED_MONTH}/bed/month × {beds} beds
+          </div>
+        </div>
+        <div>
+          <div className="text-xs uppercase tracking-wide text-slate-500">Net ROI</div>
+          <div className={`text-lg font-bold mt-1 ${netLow >= 0 ? "text-green-600" : "text-slate-700"}`}>
+            ${netLow.toLocaleString()} – ${netHigh.toLocaleString()}
+          </div>
+          <div className="text-xs text-slate-400 mt-0.5">savings minus platform cost</div>
         </div>
       </div>
     </div>

@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuth } from "@/auth/AuthContext";
+import { DemoBadge } from "@/components/core/DemoBadge";
 
 const links = [
   { to: "/ward",               label: "Ward Risk View",      roles: ["admin", "physician", "resident", "nurse", "case_manager", "analyst"] },
@@ -69,6 +70,7 @@ export function AppShell() {
       </aside>
 
       <main className="flex-1 overflow-y-auto bg-slate-50 p-6">
+        <DemoBadge />
         <Outlet />
       </main>
     </div>
