@@ -5,6 +5,7 @@ import { ApiError, api, Patient, Recommendation, RiskExplanation, RiskSummary }
   from "@/lib/api";
 import { RiskGauge } from "@/components/RiskGauge";
 import { RiskBadge } from "@/components/clinical/RiskBadge";
+import { TransitionTab } from "@/components/clinical/TransitionTab";
 import { ShapBar } from "@/components/clinical/ShapBar";
 import { Card } from "@/components/core/Card";
 import { Button } from "@/components/core/Button";
@@ -33,6 +34,7 @@ export function PatientChart() {
   const { id } = useParams<{ id: string }>();
   const patientId = id!;
   const qc = useQueryClient();
+  const [tab, setTab] = useState<"overview" | "transition">("overview");
 
   const patient = useQuery({
     queryKey: ["patient", patientId],
@@ -169,6 +171,28 @@ export function PatientChart() {
         </div>
       </Card>
 
+      {/* Tab bar */}
+      <div className="flex gap-1 border-b border-slate-200">
+        {(["overview", "transition"] as const).map((t) => (
+          <button
+            key={t}
+            onClick={() => setTab(t)}
+            className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
+              tab === t
+                ? "border-brand-600 text-brand-700"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            {t === "overview" ? "Overview" : "Transition & Follow-Up"}
+          </button>
+        ))}
+      </div>
+
+      {tab === "transition" && (
+        <TransitionTab patientId={patientId} admissionId={admissions.data?.[0]?.id ?? null} />
+      )}
+
+      {tab === "overview" && (<>
       {/* Main 3-col grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
@@ -302,6 +326,7 @@ export function PatientChart() {
           </Button>
         </form>
       </Card>
+      </>)}
 
       <footer className="text-xs text-slate-400 italic border-t border-slate-200 pt-4">
         CONFIDENTIAL — Protected Health Information. Decision-support only — not a substitute for clinical judgment.
