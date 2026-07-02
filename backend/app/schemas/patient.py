@@ -14,6 +14,8 @@ class PatientCreate(BaseModel):
     last_name: str = Field(..., max_length=120)
     dob: date
     sex: str = Field(..., max_length=20)
+    phone_number: str | None = Field(None, max_length=40)
+    preferred_language: str = Field("en", max_length=8)
 
 
 class PatientRead(BaseModel):
@@ -24,6 +26,9 @@ class PatientRead(BaseModel):
     last_name: str
     dob: date
     sex: str
+    phone_number: str | None
+    preferred_language: str
+    messaging_opted_out: bool
     created_at: datetime
 
     model_config = {"from_attributes": True}

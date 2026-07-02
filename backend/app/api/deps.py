@@ -60,5 +60,5 @@ def require_role(*allowed: RoleName):
 def require_any_clinical_role():
     return require_role(
         RoleName.ADMIN, RoleName.PHYSICIAN, RoleName.RESIDENT,
-        RoleName.NURSE, RoleName.CASE_MANAGER,
+        RoleName.NURSE, RoleName.CASE_MANAGER, RoleName.PHARMACIST,
     )
