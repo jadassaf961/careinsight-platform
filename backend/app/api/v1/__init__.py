@@ -10,6 +10,7 @@ from app.api.v1 import (
     patients,
     predictions,
     reports,
+    transitions,
 )
 
 api_router = APIRouter(prefix="/api/v1")
@@ -21,3 +22,4 @@ api_router.include_router(reports.router)
 api_router.include_router(chat.router)
 api_router.include_router(dashboard.router)
 api_router.include_router(admin.router)
+api_router.include_router(transitions.router)
