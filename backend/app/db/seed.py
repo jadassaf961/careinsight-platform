@@ -24,6 +24,7 @@ _DEMO_USERS = [
     (RoleName.RESIDENT, "resident@careinsight.dev", "Dr. Demo Resident"),
     (RoleName.NURSE, "nurse@careinsight.dev", "Nurse Demo"),
     (RoleName.CASE_MANAGER, "casemanager@careinsight.dev", "Demo Case Manager"),
+    (RoleName.PHARMACIST, "pharmacist@careinsight.dev", "Demo Pharmacist"),
     (RoleName.ANALYST, "analyst@careinsight.dev", "Demo Analyst"),
 ]
 
@@ -418,6 +419,49 @@ _PATIENTS: list[tuple] = [
 ]
 
 
+def seed_transitions(db: Session) -> None:
+    """Demo transition plans, check-ins, and escalations. Idempotent."""
+    from app.models.followup import CheckinStatus, FollowUpCheckin
+    from app.models.transition import TransitionPlan
+    from app.services import followup_service, transition_service
+    from app.services.messaging.templates import render_checkin
+
+    if db.query(TransitionPlan).count() > 0:
+        return
+    now = datetime.now(timezone.utc)
+
+    active = (
+        db.query(Admission).filter(Admission.discharged_at.is_(None)).limit(6).all()
+    )
+    for i, adm in enumerate(active):
+        patient = db.get(Patient, adm.patient_id)
+        if not patient.phone_number:
+            patient.phone_number = f"+9617000{1000 + i}"
+        plan = transition_service.create_plan(db, adm, patient.hospital_id)
+        plan.target_discharge_date = (now + timedelta(days=i % 3)).date()
+        # discharge two of them so the follow-up timeline has content
+        if i < 2:
+            transition_service.discharge_plan(db, plan, now=now - timedelta(days=3))
+            # mark the day-2 check-in as sent so the demo phone has a message
+            c = db.query(FollowUpCheckin).filter_by(plan_id=plan.id, day_offset=2).first()
+            if c is not None:
+                c.status = CheckinStatus.SENT
+                c.sent_at = now - timedelta(days=1)
+                c.sent_body = render_checkin(
+                    patient.preferred_language,
+                    name=patient.first_name, hospital="CareInsight Demo Hospital", day=2,
+                )
+        # answer one check-in with a red flag so the escalation queue is not empty
+        if i == 0:
+            c = db.query(FollowUpCheckin).filter_by(plan_id=plan.id, day_offset=2).first()
+            if c is not None:
+                followup_service.record_response(
+                    db, c, "I have chest pain and missed my meds",
+                    provider_message_id=f"seed-{plan.id}")
+    db.commit()
+    logger.info("Seeded %d demo transition plans.", len(active))
+
+
 def seed_all(db: Session) -> None:
     if db.query(Hospital).first():
         logger.info("Seed data already present, skipping.")
@@ -514,6 +558,7 @@ def seed_all(db: Session) -> None:
     db.commit()
     logger.info("Seed complete. %d patients seeded. Demo password: %s",
                 len(_PATIENTS), settings.seed_password)
+    seed_transitions(db)
 
 
 def main() -> None:

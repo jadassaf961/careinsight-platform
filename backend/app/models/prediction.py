@@ -6,7 +6,6 @@ from datetime import datetime
 
 from sqlalchemy import Boolean, Float, ForeignKey, Index, Integer, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy.sql import expression
 
 from app.db.base import Base, TimestampMixin, UUIDPKMixin, UUIDType
 

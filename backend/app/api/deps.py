@@ -1,7 +1,6 @@
 """FastAPI dependencies: current user resolution and RBAC enforcement."""
 from __future__ import annotations
 
-from typing import Iterable
 from uuid import UUID
 
 from fastapi import Depends, HTTPException, status
