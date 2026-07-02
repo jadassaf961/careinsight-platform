@@ -1,0 +1,10 @@
+<svg viewBox="0 0 520 100" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="CareInsight — white variant">
+  <rect x="10" y="57" width="22" height="21" fill="#7dd3fc"></rect>
+  <rect x="36" y="42" width="22" height="36" fill="#7dd3fc"></rect>
+  <rect x="62" y="22" width="22" height="56" fill="#7dd3fc"></rect>
+  <path d="M 2,78 L 84,78 L 92,58 L 99,96 L 106,78 L 510,78" stroke="#7dd3fc" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+  <circle cx="510" cy="78" r="4.5" fill="#7dd3fc"></circle>
+  <text y="78" font-family="'DM Sans','Segoe UI',system-ui,sans-serif" font-size="54" letter-spacing="-0.5">
+    <tspan x="116" fill="#7dd3fc" font-weight="300">Care</tspan><tspan fill="rgba(255,255,255,0.65)" font-weight="400">Insight</tspan>
+  </text>
+</svg>

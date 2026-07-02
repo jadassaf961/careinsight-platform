@@ -41,3 +41,9 @@ ml-service/app/registry/*.joblib
 # Generated PDFs / outputs
 backend/outputs/
 *.pdf
+
+# SQLite dev databases
+*.db
+*.sqlite
+*.sqlite3
+backend/backend.err

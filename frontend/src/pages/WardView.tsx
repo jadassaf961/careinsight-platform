@@ -2,12 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 import { api, PopulationResponse } from "@/lib/api";
-
-const TIER_BADGE: Record<string, string> = {
-  High: "bg-red-100 text-red-800 border border-red-200",
-  Medium: "bg-yellow-100 text-yellow-800 border border-yellow-200",
-  Low: "bg-green-100 text-green-800 border border-green-200",
-};
+import { StatCard } from "@/components/clinical/StatCard";
+import { RiskBadge } from "@/components/clinical/RiskBadge";
 
 export function WardView() {
   const navigate = useNavigate();
@@ -29,53 +25,45 @@ export function WardView() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold">Ward Risk View</h1>
+        <h1 className="font-display text-2xl font-semibold text-navy-700">Ward Risk View</h1>
         <p className="text-sm text-slate-500 mt-1">
           All admitted patients ranked by 30-day readmission risk — highest risk first.
         </p>
       </div>
 
-      {/* Summary cards */}
+      {/* Summary stat cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="card border-l-4 border-red-500">
-          <div className="text-xs uppercase tracking-wide text-slate-500">High Risk</div>
-          <div className="text-3xl font-bold text-red-600 mt-1">
-            {data?.high_count ?? "—"}
-          </div>
-          <div className="text-xs text-slate-400 mt-1">Require immediate attention</div>
-        </div>
-        <div className="card border-l-4 border-yellow-400">
-          <div className="text-xs uppercase tracking-wide text-slate-500">Medium Risk</div>
-          <div className="text-3xl font-bold text-yellow-600 mt-1">
-            {data?.medium_count ?? "—"}
-          </div>
-          <div className="text-xs text-slate-400 mt-1">Monitor before discharge</div>
-        </div>
-        <div className="card border-l-4 border-green-500">
-          <div className="text-xs uppercase tracking-wide text-slate-500">Low Risk</div>
-          <div className="text-3xl font-bold text-green-600 mt-1">
-            {data?.low_count ?? "—"}
-          </div>
-          <div className="text-xs text-slate-400 mt-1">Standard discharge protocol</div>
-        </div>
+        <StatCard
+          label="High Risk"
+          value={data?.high_count ?? "—"}
+          tone="risk"
+        />
+        <StatCard
+          label="Medium Risk"
+          value={data?.medium_count ?? "—"}
+          tone="default"
+        />
+        <StatCard
+          label="Low Risk"
+          value={data?.low_count ?? "—"}
+          tone="success"
+        />
       </div>
 
       {/* Filters */}
-      <div className="flex gap-3 mb-4">
+      <div className="flex gap-3 mb-4 flex-wrap">
         <select
-          className="border rounded-md px-3 py-1.5 text-sm bg-white"
+          className="border border-slate-300 rounded-md px-3 py-1.5 text-sm bg-white font-sans focus:outline-none focus:shadow-focus focus:border-brand-600"
           value={deptFilter}
           onChange={(e) => setDeptFilter(e.target.value)}
         >
           <option value="">All departments</option>
           {allDepartments.map((d) => (
-            <option key={d} value={d}>
-              {d}
-            </option>
+            <option key={d} value={d}>{d}</option>
           ))}
         </select>
         <select
-          className="border rounded-md px-3 py-1.5 text-sm bg-white"
+          className="border border-slate-300 rounded-md px-3 py-1.5 text-sm bg-white font-sans focus:outline-none focus:shadow-focus focus:border-brand-600"
           value={tierFilter}
           onChange={(e) => setTierFilter(e.target.value)}
         >
@@ -86,49 +74,46 @@ export function WardView() {
         </select>
         {(deptFilter || tierFilter) && (
           <button
-            className="text-sm text-slate-500 underline"
-            onClick={() => {
-              setDeptFilter("");
-              setTierFilter("");
-            }}
+            className="text-sm text-slate-500 hover:text-slate-700 underline transition-colors"
+            onClick={() => { setDeptFilter(""); setTierFilter(""); }}
           >
             Clear filters
           </button>
         )}
       </div>
 
-      {/* Table */}
-      <div className="card p-0 overflow-hidden">
+      {/* Patient table */}
+      <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50 border-b">
+          <thead className="bg-slate-50 border-b border-slate-200">
             <tr>
-              <th className="text-left px-4 py-3 font-medium text-slate-600">Patient</th>
-              <th className="text-left px-4 py-3 font-medium text-slate-600">MRN</th>
-              <th className="text-left px-4 py-3 font-medium text-slate-600">Department</th>
-              <th className="text-left px-4 py-3 font-medium text-slate-600">Risk Score</th>
-              <th className="text-left px-4 py-3 font-medium text-slate-600">Tier</th>
-              <th className="text-left px-4 py-3 font-medium text-slate-600">Top Risk Factor</th>
+              <th className="text-left px-4 py-3 font-sans font-medium text-slate-500 text-xs uppercase tracking-wide">Patient</th>
+              <th className="text-left px-4 py-3 font-sans font-medium text-slate-500 text-xs uppercase tracking-wide">MRN</th>
+              <th className="text-left px-4 py-3 font-sans font-medium text-slate-500 text-xs uppercase tracking-wide">Department</th>
+              <th className="text-left px-4 py-3 font-sans font-medium text-slate-500 text-xs uppercase tracking-wide">Risk Score</th>
+              <th className="text-left px-4 py-3 font-sans font-medium text-slate-500 text-xs uppercase tracking-wide">Tier</th>
+              <th className="text-left px-4 py-3 font-sans font-medium text-slate-500 text-xs uppercase tracking-wide">Top Risk Factor</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y">
+          <tbody className="divide-y divide-slate-100">
             {isLoading && (
               <tr>
-                <td colSpan={7} className="text-center py-10 text-slate-400">
+                <td colSpan={7} className="text-center py-10 text-slate-400 text-sm">
                   Loading patients…
                 </td>
               </tr>
             )}
             {isError && (
               <tr>
-                <td colSpan={7} className="text-center py-10 text-red-500">
+                <td colSpan={7} className="text-center py-10 text-risk-high text-sm">
                   Failed to load ward data.
                 </td>
               </tr>
             )}
             {!isLoading && !isError && data?.patients.length === 0 && (
               <tr>
-                <td colSpan={7} className="text-center py-10 text-slate-400">
+                <td colSpan={7} className="text-center py-10 text-slate-400 text-sm">
                   No patients match the current filters.
                 </td>
               </tr>
@@ -136,31 +121,28 @@ export function WardView() {
             {data?.patients.map((p) => (
               <tr
                 key={p.patient_id}
-                className="hover:bg-slate-50 cursor-pointer"
+                className="hover:bg-slate-50 cursor-pointer transition-colors duration-100"
                 onClick={() => navigate(`/patients/${p.patient_id}`)}
               >
-                <td className="px-4 py-3 font-medium">
-                  {p.first_name} {p.last_name}
+                <td className="px-4 py-3 font-sans font-medium text-slate-800">
+                  {p.last_name}, {p.first_name}
                 </td>
-                <td className="px-4 py-3 text-slate-500 font-mono text-xs">{p.mrn}</td>
+                <td className="px-4 py-3 font-mono text-xs text-slate-500">{p.mrn}</td>
                 <td className="px-4 py-3 text-slate-600">{p.department}</td>
-                <td className="px-4 py-3 font-mono font-semibold">
+                <td className="px-4 py-3 font-mono font-semibold text-slate-800">
                   {(p.probability * 100).toFixed(1)}%
                 </td>
                 <td className="px-4 py-3">
-                  <span
-                    className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                      TIER_BADGE[p.risk_tier] ?? ""
-                    }`}
-                  >
-                    {p.risk_tier}
-                  </span>
+                  <RiskBadge
+                    tier={p.risk_tier.toLowerCase() as 'high' | 'medium' | 'low'}
+                    size="sm"
+                  />
                 </td>
-                <td className="px-4 py-3 text-slate-500 text-xs">
+                <td className="px-4 py-3 text-slate-500 text-xs max-w-[200px] truncate">
                   {p.top_factor ?? "—"}
                 </td>
-                <td className="px-4 py-3">
-                  <span className="text-brand-700 hover:underline text-xs">
+                <td className="px-4 py-3 text-right">
+                  <span className="text-brand-600 hover:text-brand-700 text-xs font-medium">
                     View chart →
                   </span>
                 </td>
@@ -169,8 +151,8 @@ export function WardView() {
           </tbody>
         </table>
         {data && (
-          <div className="px-4 py-2 border-t bg-slate-50 text-xs text-slate-400">
-            {data.total} admitted patients with predictions
+          <div className="px-4 py-2 border-t border-slate-100 bg-slate-50 text-xs text-slate-400">
+            {data.total} admitted patient{data.total !== 1 ? 's' : ''} with predictions
           </div>
         )}
       </div>

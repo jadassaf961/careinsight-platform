@@ -9,8 +9,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", extra="ignore", case_sensitive=False)
 
-    # Database
-    database_url: str = "postgresql+psycopg://careinsight:changeme@localhost:5432/careinsight"
+    # Database — defaults to SQLite for zero-install local dev.
+    # In production override with postgresql+psycopg://... via env.
+    database_url: str = "sqlite:///./dev.db"
 
     # Auth
     jwt_secret: str = "dev-only-change-me"

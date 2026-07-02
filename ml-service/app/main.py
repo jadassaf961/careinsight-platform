@@ -6,7 +6,9 @@ import sys
 from pathlib import Path
 
 import numpy as np
-from fastapi import FastAPI, HTTPException
+import tempfile
+
+from fastapi import FastAPI, File, HTTPException, UploadFile
 
 from app.config import settings
 from app.model_loader import get_state, set_model
@@ -129,6 +131,30 @@ def explain(req: ExplainRequest) -> ExplainResponse:
         model_name=settings.model_name,
         model_version=f"{settings.model_version}-{state['algorithm']}",
     )
+
+
+@app.post("/retrain/upload", response_model=RetrainResponse)
+def retrain_upload(file: UploadFile = File(...)) -> RetrainResponse:
+    """Accept a CSV file upload, train, hot-swap model in memory, return metrics."""
+    content = file.file.read()
+    with tempfile.NamedTemporaryFile(mode="wb", suffix=".csv", delete=False) as tmp:
+        tmp.write(content)
+        tmp_path = Path(tmp.name)
+    try:
+        result = train_from_csv(tmp_path, settings.model_registry_dir)
+        import joblib
+        blob = joblib.load(result.model_path)
+        set_model(blob["model"], blob["algorithm"])
+        return RetrainResponse(
+            status="ok",
+            name=settings.model_name,
+            version=settings.model_version,
+            algorithm=result.algorithm,
+            cv_auc=result.cv_auc,
+            test_auc=result.test_auc,
+        )
+    finally:
+        tmp_path.unlink(missing_ok=True)
 
 
 @app.post("/retrain", response_model=RetrainResponse)

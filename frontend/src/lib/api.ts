@@ -71,6 +71,12 @@ export interface PatientCreate {
   sex: string;
 }
 
+export interface Department {
+  id: string;
+  name: string;
+  code: string;
+}
+
 export interface PatientList {
   items: Patient[];
   total: number;
@@ -131,6 +137,15 @@ export interface FeatureImportanceItem {
   feature_name: string;
   humanized_label: string;
   avg_importance: number;
+}
+
+export interface RetrainResult {
+  status: string;
+  name: string;
+  version: string;
+  algorithm: string;
+  cv_auc: number | null;
+  test_auc: number | null;
 }
 
 export interface ModelStatsResponse {

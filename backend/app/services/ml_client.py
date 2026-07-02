@@ -50,3 +50,14 @@ class MLClient:
 
     def model_version(self) -> dict[str, Any]:
         return self._get("/model/version")
+
+    def retrain_upload(self, csv_content: bytes, filename: str = "upload.csv") -> dict[str, Any]:
+        url = f"{self.base_url}/retrain/upload"
+        try:
+            with httpx.Client(timeout=180.0) as client:
+                resp = client.post(url, files={"file": (filename, csv_content, "text/csv")})
+                resp.raise_for_status()
+                return resp.json()
+        except httpx.HTTPError as exc:
+            logger.warning("ML service retrain failed: %s", exc)
+            raise MLServiceError(f"ML service retrain failed: {exc}") from exc

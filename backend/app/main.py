@@ -9,9 +9,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1 import api_router
 from app.core.config import settings
 from app.core.logging import configure_logging, get_logger
+from app.db.base import Base
 from app.db.seed import seed_all
-from app.db.session import SessionLocal
+from app.db.session import SessionLocal, engine
 from app.middleware.audit import AuditMiddleware
+import app.models  # noqa: F401 — ensure model registration with Base.metadata
 
 logger = get_logger(__name__)
 
@@ -19,6 +21,10 @@ logger = get_logger(__name__)
 @asynccontextmanager
 async def lifespan(_: FastAPI):
     configure_logging()
+    # For SQLite dev mode, create tables directly. Postgres uses Alembic.
+    if settings.database_url.startswith("sqlite"):
+        Base.metadata.create_all(bind=engine)
+        logger.info("SQLite dev DB ready at %s", settings.database_url)
     if settings.seed_demo_data:
         db = SessionLocal()
         try:
