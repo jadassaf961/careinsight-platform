@@ -63,3 +63,53 @@ def test_models_round_trip(db: Session, hospital: Hospital):
     assert db.query(FollowUpCheckin).one().status == CheckinStatus.SCHEDULED
     assert db.query(Escalation).one().status == EscalationStatus.OPEN
     assert db.query(ReadmissionEvent).count() == 0
+
+
+def test_role_for_item_mapping():
+    from app.services import transition_service
+
+    assert transition_service.role_for_item("Perform full medication reconciliation before discharge") == "pharmacist"
+    assert transition_service.role_for_item("Schedule follow-up appointment within 7 days of discharge") == "case_manager"
+    assert transition_service.role_for_item("Nephrology referral; monitor renal function post-discharge") == "case_manager"
+    assert transition_service.role_for_item("Provide written discharge summary in patient's preferred language") == "physician"
+    assert transition_service.role_for_item("Screen for social determinants: housing, food access, transport") == "nurse"
+
+
+def test_create_plan_generates_default_tasks(db: Session, hospital: Hospital):
+    from app.services import transition_service
+
+    adm = make_admission(db, hospital)
+    plan = transition_service.create_plan(db, adm, hospital.id)
+    db.commit()
+    assert plan.status == PlanStatus.PLANNING
+    titles = [t.title for t in plan.tasks]
+    assert "Confirm patient has correct medications and understands dosing" in titles
+    assert all(t.source == "default" for t in plan.tasks)
+    assert {t.role for t in plan.tasks} <= {"physician", "nurse", "case_manager", "pharmacist"}
+
+
+def test_create_plan_twice_rejected(db: Session, hospital: Hospital):
+    import pytest
+
+    from app.services import transition_service
+
+    adm = make_admission(db, hospital)
+    transition_service.create_plan(db, adm, hospital.id)
+    db.commit()
+    with pytest.raises(ValueError):
+        transition_service.create_plan(db, adm, hospital.id)
+
+
+def test_discharge_plan_sets_status_and_discharged_at(db: Session, hospital: Hospital):
+    from app.services import transition_service
+
+    adm = make_admission(db, hospital)
+    plan = transition_service.create_plan(db, adm, hospital.id)
+    db.commit()
+    now = datetime(2026, 7, 2, 9, 0, tzinfo=timezone.utc)
+    transition_service.discharge_plan(db, plan, now=now)
+    db.commit()
+    assert plan.status == PlanStatus.DISCHARGED
+    assert db.get(Admission, adm.id).discharged_at is not None
+    # check-ins were scheduled (detail asserted in followup tests)
+    assert db.query(FollowUpCheckin).filter(FollowUpCheckin.plan_id == plan.id).count() == 4
