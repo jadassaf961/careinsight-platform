@@ -4,15 +4,15 @@
 
 @layer components {
   .card {
-    @apply bg-white rounded-lg shadow-sm border border-slate-200 p-6;
+    @apply bg-paper rounded-xl border border-hairline p-6;
   }
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 rounded-md font-medium transition-colors;
+    @apply inline-flex items-center justify-center px-5 py-2 rounded-full font-display font-semibold lowercase transition-colors;
   }
   .btn-primary {
-    @apply btn bg-brand-600 text-white hover:bg-brand-700;
+    @apply btn bg-ink text-paper hover:bg-ink/85;
   }
   .btn-secondary {
-    @apply btn bg-white border border-slate-300 text-slate-700 hover:bg-slate-50;
+    @apply btn bg-paper border border-hairline text-ink hover:bg-tint;
   }
 }
