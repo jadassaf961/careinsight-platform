@@ -6,6 +6,7 @@ import { ApiError, api, Patient, Recommendation, RiskExplanation, RiskSummary }
 import { RiskGauge } from "@/components/RiskGauge";
 import { RiskBadge } from "@/components/clinical/RiskBadge";
 import { TransitionTab } from "@/components/clinical/TransitionTab";
+import { SectionLabel } from "@/components/core/SectionLabel";
 import { ShapBar } from "@/components/clinical/ShapBar";
 import { Card } from "@/components/core/Card";
 import { Button } from "@/components/core/Button";
@@ -22,13 +23,6 @@ function Spinner() {
   );
 }
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="font-display text-[0.65rem] font-semibold tracking-allcaps uppercase text-slate-400 mb-3">
-      {children}
-    </div>
-  );
-}
 
 export function PatientChart() {
   const { id } = useParams<{ id: string }>();
@@ -125,7 +119,7 @@ export function PatientChart() {
     setChatInput("");
   }
 
-  if (patient.isLoading) return <div className="p-6 text-sm text-slate-500">Loading patient…</div>;
+  if (patient.isLoading) return <div className="p-6 text-sm text-ink/50">Loading patient…</div>;
   if (patient.isError) return <div className="p-6 text-sm text-risk-high">Patient not found.</div>;
 
   const p = patient.data!;
@@ -136,18 +130,18 @@ export function PatientChart() {
       {/* Patient header */}
       <Card noPadding>
         <div className="flex flex-wrap items-start gap-4 justify-between p-6">
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="font-display text-xl font-semibold text-navy-700 m-0 leading-tight">
+          <div className="flex flex-col gap-3">
+            <div className="flex items-center gap-4 flex-wrap">
+              <h1 className="font-display text-4xl font-bold tracking-[-0.03em] text-ink m-0 leading-none">
                 {p.last_name}, {p.first_name}
               </h1>
-              {risk.data && <RiskBadge tier={riskTier} />}
+              {risk.data && <RiskBadge tier={riskTier} size="lg" />}
             </div>
-            <div className="text-sm text-slate-500 flex items-center gap-2">
-              <span>MRN <span className="font-mono text-slate-700">{p.mrn}</span></span>
-              <span className="text-slate-300">·</span>
+            <div className="font-mono text-xs text-ink/50 flex items-center gap-3">
+              <span>MRN {p.mrn}</span>
+              <span className="text-ink/20">·</span>
               <span>DOB {p.dob}</span>
-              <span className="text-slate-300">·</span>
+              <span className="text-ink/20">·</span>
               <span>{p.sex}</span>
             </div>
           </div>
@@ -172,15 +166,15 @@ export function PatientChart() {
       </Card>
 
       {/* Tab bar */}
-      <div className="flex gap-1 border-b border-slate-200">
+      <div className="flex gap-1 border-b border-hairline">
         {(["overview", "transition"] as const).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
             className={`px-4 py-2 text-sm font-medium border-b-2 -mb-px transition-colors ${
               tab === t
-                ? "border-brand-600 text-brand-700"
-                : "border-transparent text-slate-500 hover:text-slate-700"
+                ? "border-ink text-ink"
+                : "border-transparent text-ink/50 hover:text-ink"
             }`}
           >
             {t === "overview" ? "Overview" : "Transition & Follow-Up"}
@@ -202,14 +196,14 @@ export function PatientChart() {
 
           {generatePrediction.isPending && (
             <div className="space-y-3 animate-pulse">
-              <div className="h-32 bg-slate-100 rounded-lg" />
-              <div className="h-3 bg-slate-100 rounded w-3/4 mx-auto" />
-              <p className="text-xs text-slate-400 text-center">Calculating risk…</p>
+              <div className="h-32 bg-tint rounded-lg" />
+              <div className="h-3 bg-tint rounded w-3/4 mx-auto" />
+              <p className="text-xs text-ink/40 text-center">Calculating risk…</p>
             </div>
           )}
 
           {!generatePrediction.isPending && risk.isError && (
-            <p className="text-sm text-slate-500">
+            <p className="text-sm text-ink/50">
               No prediction yet. Click <em>Run Prediction</em> above.
             </p>
           )}
@@ -236,7 +230,7 @@ export function PatientChart() {
           <Card>
             <SectionLabel>Top Risk Drivers</SectionLabel>
             {!explanation.data ? (
-              <p className="text-sm text-slate-500">
+              <p className="text-sm text-ink/50">
                 Run a prediction to see SHAP-based clinical drivers.
               </p>
             ) : (
@@ -257,14 +251,14 @@ export function PatientChart() {
           <Card>
             <SectionLabel>Discharge Checklist</SectionLabel>
             {!recs.data ? (
-              <p className="text-sm text-slate-500">No recommendations yet.</p>
+              <p className="text-sm text-ink/50">No recommendations yet.</p>
             ) : (
               <ul className="space-y-2.5">
                 {recs.data.map((r, i) => (
                   <li key={i} className="flex items-start gap-2.5">
                     <input
                       type="checkbox"
-                      className="mt-0.5 rounded border-slate-300 text-brand-600 focus:ring-brand-500 shrink-0"
+                      className="mt-0.5 rounded border-hairline accent-ink shrink-0"
                     />
                     <span className="text-sm text-slate-700 flex-1 leading-snug">{r.text}</span>
                     {r.source !== "base" && (
@@ -281,12 +275,12 @@ export function PatientChart() {
       {/* AI Copilot — full width */}
       <Card>
         <SectionLabel>AI Clinical Copilot</SectionLabel>
-        <p className="text-xs text-slate-400 mb-3">
+        <p className="text-xs text-ink/40 mb-3">
           Decision-support only — not a substitute for clinical judgment.
         </p>
         <div className="min-h-[6rem] max-h-72 overflow-y-auto space-y-2 mb-3">
           {chat.length === 0 && (
-            <p className="text-xs text-slate-400 italic">
+            <p className="text-xs text-ink/40 italic">
               Ask about this patient's risk factors, recommended interventions, or clinical context.
             </p>
           )}
@@ -296,18 +290,18 @@ export function PatientChart() {
               className={[
                 "text-sm rounded-md px-3 py-2 whitespace-pre-wrap leading-relaxed",
                 t.role === "user"
-                  ? "bg-brand-50 text-brand-700 ml-8"
-                  : "bg-slate-50 text-slate-800 mr-8",
+                  ? "bg-tint text-ink ml-8"
+                  : "bg-tint/60 text-ink mr-8",
               ].join(" ")}
             >
               {t.content}
             </div>
           ))}
           {askAi.isPending && (
-            <div className="bg-slate-50 rounded-md px-3 py-3 flex items-center gap-1.5 mr-8">
-              <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.3s]" />
-              <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce [animation-delay:-0.15s]" />
-              <span className="w-2 h-2 bg-slate-400 rounded-full animate-bounce" />
+            <div className="bg-tint rounded-md px-3 py-3 flex items-center gap-1.5 mr-8">
+              <span className="w-2 h-2 bg-ink/40 rounded-full animate-bounce [animation-delay:-0.3s]" />
+              <span className="w-2 h-2 bg-ink/40 rounded-full animate-bounce [animation-delay:-0.15s]" />
+              <span className="w-2 h-2 bg-ink/40 rounded-full animate-bounce" />
             </div>
           )}
         </div>
@@ -317,8 +311,8 @@ export function PatientChart() {
             onChange={(e) => setChatInput(e.target.value)}
             placeholder="Ask why this patient is high risk…"
             disabled={askAi.isPending}
-            className="flex-1 font-sans text-sm px-3 py-2 border border-slate-300 rounded-md
-                       focus:outline-none focus:shadow-focus focus:border-brand-600
+            className="flex-1 font-sans text-sm px-0 py-2 bg-transparent border-0 border-b border-hairline rounded-none
+                       focus:outline-none focus:border-ink placeholder:text-ink/30
                        disabled:opacity-50 disabled:cursor-not-allowed"
           />
           <Button type="submit" disabled={askAi.isPending}>
@@ -328,7 +322,7 @@ export function PatientChart() {
       </Card>
       </>)}
 
-      <footer className="text-xs text-slate-400 italic border-t border-slate-200 pt-4">
+      <footer className="text-xs text-ink/40 italic border-t border-hairline pt-4">
         CONFIDENTIAL — Protected Health Information. Decision-support only — not a substitute for clinical judgment.
       </footer>
     </div>
