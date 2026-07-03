@@ -4,30 +4,23 @@ import {
 } from "@/lib/api";
 import { Card } from "@/components/core/Card";
 import { Button } from "@/components/core/Button";
+import { SectionLabel } from "@/components/core/SectionLabel";
 import { SimulatedPhone } from "@/components/clinical/SimulatedPhone";
 
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="font-display text-[0.65rem] font-semibold tracking-allcaps uppercase text-slate-400 mb-3">
-      {children}
-    </div>
-  );
-}
-
 const CHECKIN_STATUS_STYLE: Record<string, string> = {
-  scheduled: "bg-slate-100 text-slate-600",
-  sent: "bg-blue-50 text-blue-700 border border-blue-200",
-  responded: "bg-green-50 text-green-700 border border-green-200",
-  no_response: "bg-amber-50 text-amber-800 border border-amber-200",
-  send_failed: "bg-red-50 text-red-700 border border-red-200",
-  manual: "bg-purple-50 text-purple-700 border border-purple-200",
-  skipped: "bg-slate-100 text-slate-400",
+  scheduled: "bg-tint text-ink/60",
+  sent: "bg-tint text-ink/60 border border-hairline",
+  responded: "bg-risk-low-bg text-risk-low border border-risk-low-border",
+  no_response: "bg-risk-medium-bg text-risk-medium border border-risk-medium-border",
+  send_failed: "bg-risk-high-bg text-risk-high border border-risk-high-border",
+  manual: "bg-tint text-ink/60 border border-hairline",
+  skipped: "bg-tint text-ink/40",
 };
 
 const PRIORITY_STYLE: Record<string, string> = {
   high: "text-risk-high",
-  medium: "text-amber-700",
-  low: "text-slate-500",
+  medium: "text-risk-medium",
+  low: "text-ink/50",
 };
 
 export function TransitionTab({ patientId, admissionId }: { patientId: string; admissionId: string | null }) {
@@ -83,14 +76,14 @@ export function TransitionTab({ patientId, admissionId }: { patientId: string; a
     return (
       <Card>
         <SectionLabel>Transition Plan</SectionLabel>
-        <p className="text-sm text-slate-500 mb-3">
+        <p className="text-sm text-ink/50 mb-3">
           No discharge planning has started for this patient.
         </p>
         <Button onClick={() => createPlan.mutate()} disabled={!admissionId || createPlan.isPending}>
           Start discharge planning
         </Button>
         {!admissionId && (
-          <p className="text-xs text-slate-400 mt-2">Requires an admission on record.</p>
+          <p className="text-xs text-ink/40 mt-2">Requires an admission on record.</p>
         )}
       </Card>
     );
@@ -109,8 +102,8 @@ export function TransitionTab({ patientId, admissionId }: { patientId: string; a
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
             <SectionLabel>Transition Checklist</SectionLabel>
-            <p className="text-xs text-slate-400 -mt-2 mb-3">
-              Plan status: <span className="font-medium text-slate-600">{plan.data?.status ?? "…"}</span>
+            <p className="text-xs text-ink/40 -mt-2 mb-3">
+              Plan status: <span className="font-medium text-ink/60">{plan.data?.status ?? "…"}</span>
               {" · "}{openCount} task{openCount !== 1 ? "s" : ""} open
             </p>
           </div>
@@ -126,21 +119,21 @@ export function TransitionTab({ patientId, admissionId }: { patientId: string; a
             )}
           </div>
         </div>
-        {plan.isLoading && <p className="text-sm text-slate-400">Loading…</p>}
+        {plan.isLoading && <p className="text-sm text-ink/40">Loading…</p>}
         {Object.entries(byRole).map(([role, roleTasks]) => (
           <div key={role} className="mb-4 last:mb-0">
-            <div className="text-xs font-semibold uppercase tracking-wide text-slate-400 mb-1.5">
+            <div className="text-xs font-semibold uppercase tracking-wide text-ink/40 mb-1.5">
               {role.replace("_", " ")}
             </div>
             <div className="space-y-1">
               {roleTasks.map((t) => (
                 <label
                   key={t.id}
-                  className="flex items-start gap-2.5 p-2 rounded hover:bg-slate-50 cursor-pointer"
+                  className="flex items-start gap-2.5 p-2 rounded hover:bg-tint cursor-pointer"
                 >
                   <input
                     type="checkbox"
-                    className="mt-0.5 accent-brand-600"
+                    className="mt-0.5 accent-ink"
                     checked={t.status === "done"}
                     onChange={() =>
                       updateTask.mutate({
@@ -149,10 +142,10 @@ export function TransitionTab({ patientId, admissionId }: { patientId: string; a
                       })
                     }
                   />
-                  <span className={`text-sm ${t.status === "done" ? "line-through text-slate-400" : "text-slate-700"}`}>
+                  <span className={`text-sm ${t.status === "done" ? "line-through text-ink/40" : "text-ink/80"}`}>
                     {t.title}
                     {t.source !== "default" && (
-                      <span className="ml-2 text-[0.65rem] text-brand-600 bg-brand-600/5 rounded px-1.5 py-0.5">
+                      <span className="ml-2 text-[0.65rem] text-ink/60 bg-tint rounded px-1.5 py-0.5">
                         from risk: {t.source}
                       </span>
                     )}
@@ -167,20 +160,20 @@ export function TransitionTab({ patientId, admissionId }: { patientId: string; a
       <Card>
         <SectionLabel>Post-Discharge Follow-Up</SectionLabel>
         {(checkins.data?.length ?? 0) === 0 ? (
-          <p className="text-sm text-slate-500">
+          <p className="text-sm text-ink/50">
             Check-ins are scheduled automatically when discharge is confirmed.
           </p>
         ) : (
           <div className="space-y-2">
             {checkins.data!.map((c) => (
-              <div key={c.id} className="flex items-start justify-between gap-3 py-2 border-b border-slate-50 last:border-0">
+              <div key={c.id} className="flex items-start justify-between gap-3 py-2 border-b border-hairline/60 last:border-0">
                 <div>
-                  <div className="text-sm font-medium text-slate-700">Day {c.day_offset} check-in</div>
-                  <div className="text-xs text-slate-400">
+                  <div className="text-sm font-medium text-ink/80">Day {c.day_offset} check-in</div>
+                  <div className="text-xs text-ink/40">
                     {new Date(c.scheduled_at).toLocaleDateString()} · {c.language.toUpperCase()}
                   </div>
                   {c.responses.map((r) => (
-                    <div key={r.id} className="text-xs mt-1 text-slate-600">
+                    <div key={r.id} className="text-xs mt-1 text-ink/60">
                       Reply: “{r.raw_text}”
                       {r.red_flag && <span className="ml-1.5 text-risk-high font-semibold">RED FLAG</span>}
                       {r.meds_missed && !r.red_flag && <span className="ml-1.5 text-amber-700 font-semibold">MEDS MISSED</span>}
@@ -201,12 +194,12 @@ export function TransitionTab({ patientId, admissionId }: { patientId: string; a
           <SectionLabel>Escalations</SectionLabel>
           <div className="space-y-2">
             {escalations.data!.map((e) => (
-              <div key={e.id} className="text-sm py-1.5 border-b border-slate-50 last:border-0">
+              <div key={e.id} className="text-sm py-1.5 border-b border-hairline/60 last:border-0">
                 <span className={`font-semibold uppercase text-xs mr-2 ${PRIORITY_STYLE[e.priority]}`}>
                   {e.priority}
                 </span>
-                <span className="text-slate-700">{e.detail}</span>
-                <span className="ml-2 text-xs text-slate-400">({e.status.replace("_", " ")})</span>
+                <span className="text-ink/80">{e.detail}</span>
+                <span className="ml-2 text-xs text-ink/40">({e.status.replace("_", " ")})</span>
               </div>
             ))}
           </div>
