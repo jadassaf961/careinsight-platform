@@ -9,9 +9,9 @@ interface RiskGaugeProps {
 }
 
 const tierColor: Record<string, string> = {
-  high:   '#dc2626',
-  medium: '#d97706',
-  low:    '#16a34a',
+  high:   '#B42318',
+  medium: '#B54708',
+  low:    '#067647',
 };
 
 export function RiskGauge({
@@ -70,7 +70,7 @@ export function RiskGauge({
           {tier.toUpperCase()} RISK
         </text>
       </svg>
-      <div className="text-xs text-slate-500 text-center -mt-1">
+      <div className="text-xs text-ink/50 text-center -mt-1">
         Threshold {Math.round(threshold * 100)}% · 30-day readmission probability
         {modelName && (
           <span className="block mt-0.5 font-mono text-[10px]">
