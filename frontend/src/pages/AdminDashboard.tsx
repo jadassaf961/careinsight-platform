@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { api, ModelStatsResponse } from "@/lib/api";
 import { OutcomesPanel } from "@/components/clinical/OutcomesPanel";
+import { StatCard } from "@/components/clinical/StatCard";
 
 export function AdminDashboard() {
   const stats = useQuery({
@@ -18,24 +19,18 @@ export function AdminDashboard() {
 
   return (
     <div>
-      <h1 className="text-2xl font-bold mb-6">Administrator dashboard</h1>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <div className="card">
-          <div className="text-xs uppercase tracking-wide text-slate-500">Total predictions</div>
-          <div className="text-3xl font-bold mt-1">
-            {stats.data?.total_predictions ?? "—"}
-          </div>
-        </div>
-        <div className="card">
-          <div className="text-xs uppercase tracking-wide text-slate-500">High-risk rate</div>
-          <div className="text-3xl font-bold mt-1 text-risk-high">
-            {stats.data ? `${(stats.data.high_risk_rate * 100).toFixed(1)}%` : "—"}
-          </div>
-        </div>
-        <div className="card">
-          <div className="text-xs uppercase tracking-wide text-slate-500">Period</div>
-          <div className="text-3xl font-bold mt-1">{stats.data?.period ?? "—"}</div>
-        </div>
+      <h1 className="font-display text-4xl font-bold tracking-[-0.03em] text-ink mb-2">
+        Hospital <em className="font-serifit font-normal italic">outcomes.</em>
+      </h1>
+      <p className="text-sm text-ink/50 mb-8">Model performance, care-transition results, and return on investment.</p>
+      <div className="grid grid-cols-1 md:grid-cols-3 md:divide-x md:divide-hairline border-y border-hairline py-6 mb-8 [&>*]:md:px-8 [&>*:first-child]:md:pl-0">
+        <StatCard label="Total predictions" value={stats.data?.total_predictions ?? "—"} countUp />
+        <StatCard
+          label="High-risk rate"
+          value={stats.data ? `${(stats.data.high_risk_rate * 100).toFixed(1)}%` : "—"}
+          tone="risk"
+        />
+        <StatCard label="Period" value={stats.data?.period ?? "—"} />
       </div>
 
       <div className="mb-6">
@@ -45,7 +40,7 @@ export function AdminDashboard() {
       <ModelTransparency data={modelStats.data} isLoading={modelStats.isLoading} />
 
       {stats.data?.note && (
-        <p className="text-xs text-slate-500 italic mt-4">{stats.data.note}</p>
+        <p className="text-xs text-ink/50 italic mt-4">{stats.data.note}</p>
       )}
     </div>
   );
@@ -72,17 +67,17 @@ function RoiCalculator() {
   return (
     <div className="card mb-6">
       <h2 className="font-semibold text-lg mb-1">ROI Impact Calculator</h2>
-      <p className="text-xs text-slate-400 mb-4">
+      <p className="text-xs text-ink/40 mb-4">
         Projected savings based on published literature on clinical decision support tools
         (15–20% reduction in high-risk readmissions).
       </p>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <label className="block">
-          <span className="text-xs text-slate-500 uppercase tracking-wide">Total beds</span>
+          <span className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">Total beds</span>
           <input
             type="number"
-            className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            className="mt-1 w-full border-0 border-b border-hairline rounded-none px-0 py-1.5 text-sm bg-transparent focus:outline-none focus:border-ink"
             value={beds}
             onChange={(e) => setBeds(Number(e.target.value))}
             min={50}
@@ -90,10 +85,10 @@ function RoiCalculator() {
           />
         </label>
         <label className="block">
-          <span className="text-xs text-slate-500 uppercase tracking-wide">Monthly admissions</span>
+          <span className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">Monthly admissions</span>
           <input
             type="number"
-            className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            className="mt-1 w-full border-0 border-b border-hairline rounded-none px-0 py-1.5 text-sm bg-transparent focus:outline-none focus:border-ink"
             value={monthlyAdmissions}
             onChange={(e) => setMonthlyAdmissions(Number(e.target.value))}
             min={10}
@@ -101,10 +96,10 @@ function RoiCalculator() {
           />
         </label>
         <label className="block">
-          <span className="text-xs text-slate-500 uppercase tracking-wide">Readmission rate (%)</span>
+          <span className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">Readmission rate (%)</span>
           <input
             type="number"
-            className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            className="mt-1 w-full border-0 border-b border-hairline rounded-none px-0 py-1.5 text-sm bg-transparent focus:outline-none focus:border-ink"
             value={readmissionRate}
             onChange={(e) => setReadmissionRate(Number(e.target.value))}
             min={1}
@@ -112,10 +107,10 @@ function RoiCalculator() {
           />
         </label>
         <label className="block">
-          <span className="text-xs text-slate-500 uppercase tracking-wide">Cost per readmission ($)</span>
+          <span className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">Cost per readmission ($)</span>
           <input
             type="number"
-            className="mt-1 w-full border rounded px-2 py-1 text-sm"
+            className="mt-1 w-full border-0 border-b border-hairline rounded-none px-0 py-1.5 text-sm bg-transparent focus:outline-none focus:border-ink"
             value={costPerReadmission}
             onChange={(e) => setCostPerReadmission(Number(e.target.value))}
             min={500}
@@ -124,45 +119,45 @@ function RoiCalculator() {
         </label>
       </div>
 
-      <div className="bg-slate-50 rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="bg-tint rounded-lg p-4 grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>
-          <div className="text-xs uppercase tracking-wide text-slate-500">Annual readmissions</div>
+          <div className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">Annual readmissions</div>
           <div className="text-2xl font-bold mt-1">{annualReadmissions.toLocaleString()}</div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-slate-500">
+          <div className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">
             High-risk patients flagged / year
           </div>
-          <div className="text-2xl font-bold mt-1 text-yellow-600">
+          <div className="text-2xl font-bold mt-1 text-risk-medium">
             ~{highRiskCount.toLocaleString()}
           </div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-slate-500">
+          <div className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">
             Estimated annual savings
           </div>
-          <div className="text-2xl font-bold mt-1 text-green-600">
+          <div className="text-2xl font-bold mt-1 text-risk-low">
             ${savingsLow.toLocaleString()} – ${savingsHigh.toLocaleString()}
           </div>
         </div>
       </div>
 
-      <div className="mt-4 border-t border-slate-100 pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="mt-4 border-t border-hairline pt-4 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
-          <div className="text-xs uppercase tracking-wide text-slate-500">Platform cost</div>
+          <div className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">Platform cost</div>
           <div className="text-lg font-bold mt-1">
-            ${annualPlatformCost.toLocaleString()}<span className="text-sm font-normal text-slate-500">/yr</span>
+            ${annualPlatformCost.toLocaleString()}<span className="text-sm font-normal text-ink/50">/yr</span>
           </div>
-          <div className="text-xs text-slate-400 mt-0.5">
+          <div className="text-xs text-ink/40 mt-0.5">
             ${PRICE_PER_BED_MONTH}/bed/month × {beds} beds
           </div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-slate-500">Net ROI</div>
-          <div className={`text-lg font-bold mt-1 ${netLow >= 0 ? "text-green-600" : "text-slate-700"}`}>
+          <div className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">Net ROI</div>
+          <div className={`text-lg font-bold mt-1 ${netLow >= 0 ? "text-risk-low" : "text-ink/80"}`}>
             ${netLow.toLocaleString()} – ${netHigh.toLocaleString()}
           </div>
-          <div className="text-xs text-slate-400 mt-0.5">savings minus platform cost</div>
+          <div className="text-xs text-ink/40 mt-0.5">savings minus platform cost</div>
         </div>
       </div>
     </div>
@@ -180,7 +175,7 @@ function ModelTransparency({
     return (
       <div className="card mb-6">
         <h2 className="font-semibold text-lg mb-4">Model Transparency</h2>
-        <p className="text-sm text-slate-400">Loading…</p>
+        <p className="text-sm text-ink/40">Loading…</p>
       </div>
     );
   }
@@ -192,28 +187,28 @@ function ModelTransparency({
   return (
     <div className="card mb-6">
       <h2 className="font-semibold text-lg mb-1">Model Transparency</h2>
-      <p className="text-xs text-slate-400 mb-4">
+      <p className="text-xs text-ink/40 mb-4">
         Active prediction model performance and global feature influence across all patients.
       </p>
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         <div>
-          <div className="text-xs uppercase tracking-wide text-slate-500">Algorithm</div>
+          <div className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">Algorithm</div>
           <div className="font-semibold mt-1 capitalize">{data.algorithm.replace(/_/g, " ")}</div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-slate-500">Version</div>
+          <div className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">Version</div>
           <div className="font-semibold mt-1">{data.version}</div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-slate-500">CV AUC</div>
-          <div className="font-semibold mt-1 text-brand-700">
+          <div className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">CV AUC</div>
+          <div className="font-semibold mt-1 text-ink">
             {data.cv_auc != null ? data.cv_auc.toFixed(3) : "—"}
           </div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-slate-500">Test AUC</div>
-          <div className="font-semibold mt-1 text-brand-700">
+          <div className="font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40">Test AUC</div>
+          <div className="font-semibold mt-1 text-ink">
             {data.test_auc != null ? data.test_auc.toFixed(3) : "—"}
           </div>
         </div>
@@ -221,19 +216,19 @@ function ModelTransparency({
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <h3 className="text-sm font-medium text-slate-600 mb-3">
+          <h3 className="text-sm font-medium text-ink/60 mb-3">
             Top influencing factors (global avg |SHAP|)
           </h3>
           <div className="space-y-2">
             {data.top_features.map((f) => (
               <div key={f.feature_name}>
                 <div className="flex justify-between text-xs mb-0.5">
-                  <span className="text-slate-600">{f.humanized_label}</span>
-                  <span className="text-slate-400">{f.avg_importance.toFixed(3)}</span>
+                  <span className="text-ink/60">{f.humanized_label}</span>
+                  <span className="text-ink/40">{f.avg_importance.toFixed(3)}</span>
                 </div>
-                <div className="h-2 rounded-full bg-slate-100">
+                <div className="h-2 rounded-full bg-tint">
                   <div
-                    className="h-2 rounded-full bg-brand-600"
+                    className="h-2 rounded-full bg-ink"
                     style={{ width: `${(f.avg_importance / maxImportance) * 100}%` }}
                   />
                 </div>
@@ -243,7 +238,7 @@ function ModelTransparency({
         </div>
 
         <div>
-          <h3 className="text-sm font-medium text-slate-600 mb-3">
+          <h3 className="text-sm font-medium text-ink/60 mb-3">
             Risk tier distribution ({data.total_predictions} predictions)
           </h3>
           <div className="space-y-3">
@@ -251,19 +246,19 @@ function ModelTransparency({
               const count = data.tier_distribution[tier];
               const pct = Math.round((count / totalTier) * 100);
               const colors: Record<string, string> = {
-                High: "bg-red-500",
-                Medium: "bg-yellow-400",
-                Low: "bg-green-500",
+                High: "bg-risk-high",
+                Medium: "bg-risk-medium",
+                Low: "bg-risk-low",
               };
               return (
                 <div key={tier}>
                   <div className="flex justify-between text-xs mb-0.5">
-                    <span className="text-slate-600">{tier} Risk</span>
-                    <span className="text-slate-400">
+                    <span className="text-ink/60">{tier} Risk</span>
+                    <span className="text-ink/40">
                       {count} ({pct}%)
                     </span>
                   </div>
-                  <div className="h-2 rounded-full bg-slate-100">
+                  <div className="h-2 rounded-full bg-tint">
                     <div
                       className={`h-2 rounded-full ${colors[tier]}`}
                       style={{ width: `${pct}%` }}
