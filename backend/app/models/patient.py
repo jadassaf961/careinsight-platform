@@ -5,7 +5,7 @@ import uuid
 from datetime import date, datetime
 from typing import Any
 
-from sqlalchemy import Date, DateTime, Float, ForeignKey, String, UniqueConstraint
+from sqlalchemy import Boolean, Date, DateTime, Float, ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from app.db.base import Base, JSONField, TimestampMixin, UUIDPKMixin, UUIDType
@@ -26,6 +26,9 @@ class Patient(UUIDPKMixin, TimestampMixin, Base):
     last_name: Mapped[str] = mapped_column(String(120), nullable=False)
     dob: Mapped[date] = mapped_column(Date, nullable=False)
     sex: Mapped[str] = mapped_column(String(20), nullable=False)
+    phone_number: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    preferred_language: Mapped[str] = mapped_column(String(8), nullable=False, default="en")
+    messaging_opted_out: Mapped[bool] = mapped_column(Boolean, default=False, nullable=False)
     deleted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
 
     admissions: Mapped[list["Admission"]] = relationship(

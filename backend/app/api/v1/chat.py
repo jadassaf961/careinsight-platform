@@ -37,6 +37,39 @@ def chat(
         "Sex": patient.sex,
         "DOB": patient.dob.isoformat(),
     }
+
+    # Enrich with admission clinical features (labs, comorbidities, social factors)
+    latest_adm = next(
+        iter(sorted(patient.admissions, key=lambda a: a.admitted_at, reverse=True)),
+        None,
+    )
+    if latest_adm:
+        context["Admission type"] = latest_adm.admission_type
+        if latest_adm.length_of_stay:
+            context["Length of stay (days)"] = str(round(latest_adm.length_of_stay, 1))
+        _CF_LABELS: dict[str, str] = {
+            "age": "Age",
+            "bmi": "BMI",
+            "medications_count": "Number of active medications",
+            "num_previous_admissions": "Prior admissions (lifetime)",
+            "last_hemoglobin": "Hemoglobin (g/dL)",
+            "last_glucose": "Fasting glucose (mg/dL)",
+            "last_creatinine": "Creatinine (mg/dL)",
+            "chronic_conditions": "Chronic conditions",
+            "smoking_status": "Smoking status",
+            "alcohol_use": "Alcohol use",
+            "physical_activity": "Physical activity level",
+            "followup_compliance": "Follow-up compliance history",
+            "social_support": "Social support",
+            "mental_health_issue": "Mental health flag",
+            "insurance_type": "Insurance type",
+            "procedures_count": "Procedures this admission",
+        }
+        cf = latest_adm.clinical_features or {}
+        for key, label in _CF_LABELS.items():
+            if key in cf and cf[key] is not None:
+                context[label] = str(cf[key])
+
     if latest_pred is not None:
         context["Predicted readmission probability"] = f"{latest_pred.probability * 100:.0f}%"
         context["Risk tier"] = latest_pred.risk_tier
@@ -48,6 +81,13 @@ def chat(
         for f in top_factors:
             direction = "↑ increases risk" if f.shap_value > 0 else "↓ protective"
             context[f.humanized_label] = f"{direction} (SHAP {f.shap_value:+.3f})"
+
+        # Include pre-generated care recommendations so AI knows what is already planned
+        recs = latest_pred.recommendations
+        if recs:
+            context["Pre-generated care recommendations"] = " | ".join(
+                r.text for r in recs[:6]
+            )
 
     reply = generate_reply(
         patient_context=context,

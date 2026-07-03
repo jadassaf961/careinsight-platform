@@ -12,3 +12,18 @@ from app.models.intervention import Intervention, InterventionStatus  # noqa: F4
 from app.models.report import Report  # noqa: F401
 from app.models.audit import AuditLog  # noqa: F401
 from app.models.consent import ConsentRecord  # noqa: F401
+from app.models.transition import (  # noqa: F401
+    PlanStatus,
+    TaskStatus,
+    TransitionPlan,
+    TransitionTask,
+)
+from app.models.followup import (  # noqa: F401
+    CheckinResponse,
+    CheckinStatus,
+    Escalation,
+    EscalationPriority,
+    EscalationStatus,
+    FollowUpCheckin,
+    ReadmissionEvent,
+)

@@ -44,6 +44,8 @@ export const api = {
   get: <T>(p: string) => request<T>(p),
   post: <T>(p: string, body?: unknown) =>
     request<T>(p, { method: "POST", body: body ? JSON.stringify(body) : undefined }),
+  patch: <T>(p: string, body?: unknown) =>
+    request<T>(p, { method: "PATCH", body: body ? JSON.stringify(body) : undefined }),
 };
 
 export interface UserMe {
@@ -61,6 +63,20 @@ export interface Patient {
   last_name: string;
   dob: string;
   sex: string;
+}
+
+export interface PatientCreate {
+  mrn: string;
+  first_name: string;
+  last_name: string;
+  dob: string;
+  sex: string;
+}
+
+export interface Department {
+  id: string;
+  name: string;
+  code: string;
 }
 
 export interface PatientList {
@@ -96,4 +112,141 @@ export interface Recommendation {
   text: string;
   category: string | null;
   source: string;
+}
+
+export interface PopulationPatientRow {
+  patient_id: string;
+  first_name: string;
+  last_name: string;
+  mrn: string;
+  department: string;
+  prediction_id: string;
+  probability: number;
+  risk_tier: string;
+  top_factor: string | null;
+}
+
+export interface PopulationResponse {
+  patients: PopulationPatientRow[];
+  high_count: number;
+  medium_count: number;
+  low_count: number;
+  total: number;
+  departments: string[];
+}
+
+export interface FeatureImportanceItem {
+  feature_name: string;
+  humanized_label: string;
+  avg_importance: number;
+}
+
+export interface RetrainResult {
+  status: string;
+  name: string;
+  version: string;
+  algorithm: string;
+  cv_auc: number | null;
+  test_auc: number | null;
+}
+
+export interface ModelStatsResponse {
+  algorithm: string;
+  version: string;
+  trained_at: string | null;
+  cv_auc: number | null;
+  test_auc: number | null;
+  total_predictions: number;
+  tier_distribution: { High: number; Medium: number; Low: number };
+  top_features: FeatureImportanceItem[];
+}
+
+// ── Care transitions ────────────────────────────────────────────────────────
+
+export interface TransitionTask {
+  id: string;
+  role: string;
+  title: string;
+  status: "open" | "done" | "skipped";
+  due_date: string | null;
+  source: string;
+  created_at: string;
+}
+
+export interface TransitionPlan {
+  id: string;
+  admission_id: string;
+  status: "planning" | "ready" | "discharged" | "closed";
+  target_discharge_date: string | null;
+  created_at: string;
+  tasks: TransitionTask[];
+}
+
+export interface BoardRow {
+  patient_id: string;
+  admission_id: string;
+  first_name: string;
+  last_name: string;
+  mrn: string;
+  department: string;
+  probability: number | null;
+  risk_tier: string | null;
+  plan_id: string | null;
+  plan_status: string | null;
+  target_discharge_date: string | null;
+  open_tasks: number;
+  open_task_roles: string[];
+}
+
+export interface BoardResponse {
+  rows: BoardRow[];
+}
+
+export interface CheckinResponseItem {
+  id: string;
+  raw_text: string;
+  red_flag: boolean;
+  meds_missed: boolean;
+  opted_out: boolean;
+  concern_score: number;
+  created_at: string;
+}
+
+export interface Checkin {
+  id: string;
+  patient_id: string;
+  day_offset: number;
+  scheduled_at: string;
+  status: string;
+  sent_at: string | null;
+  sent_body: string | null;
+  language: string;
+  responses: CheckinResponseItem[];
+}
+
+export interface Escalation {
+  id: string;
+  patient_id: string | null;
+  patient_name: string | null;
+  trigger: string;
+  detail: string;
+  priority: "high" | "medium" | "low";
+  status: "open" | "in_progress" | "resolved";
+  resolution_notes: string | null;
+  created_at: string;
+}
+
+export interface OutcomeMetrics {
+  discharges_tracked: number;
+  readmissions_30d: number;
+  readmission_rate: number | null;
+  checkin_response_rate: number | null;
+  escalations_open: number;
+  escalations_resolved: number;
+  monthly: Array<{ month: string; discharges: number; readmissions: number }>;
+}
+
+export interface MetaResponse {
+  app: string;
+  messaging_mode: string;
 }

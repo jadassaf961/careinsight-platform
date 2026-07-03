@@ -8,6 +8,8 @@ import { PatientChart } from "@/pages/PatientChart";
 import { ClinicianDashboard } from "@/pages/ClinicianDashboard";
 import { CaseManagerDashboard } from "@/pages/CaseManagerDashboard";
 import { AdminDashboard } from "@/pages/AdminDashboard";
+import { ModelLab } from "@/pages/ModelLab";
+import { WardView } from "@/pages/WardView";
 
 export default function App() {
   return (
@@ -26,9 +28,11 @@ export default function App() {
           <Route path="/dashboard/clinician" element={<ClinicianDashboard />} />
           <Route path="/dashboard/case-manager" element={<CaseManagerDashboard />} />
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
-          <Route index element={<Navigate to="/patients" replace />} />
+          <Route path="/model-lab" element={<ModelLab />} />
+          <Route path="/ward" element={<WardView />} />
+          <Route index element={<Navigate to="/ward" replace />} />
         </Route>
-        <Route path="*" element={<Navigate to="/patients" replace />} />
+        <Route path="*" element={<Navigate to="/ward" replace />} />
       </Routes>
     </AuthProvider>
   );

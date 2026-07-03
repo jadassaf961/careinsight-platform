@@ -14,7 +14,9 @@ from app.db.session import get_db
 from app.models.audit import AuditLog
 from app.models.hospital import Department
 from app.models.patient import Admission, Patient
+from app.models.prediction import ModelVersion
 from app.models.user import RoleName, User
+from app.services.ml_client import MLClient, MLServiceError
 
 router = APIRouter(prefix="/admin", tags=["admin"])
 
@@ -91,6 +93,31 @@ def import_csv(
         "skipped_rows": skipped,
         "errors": errors[:10],
     }
+
+
+@router.post("/model/retrain")
+async def retrain_model(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db),
+    current: User = Depends(require_role(RoleName.ADMIN, RoleName.ANALYST)),
+) -> dict:
+    """Upload a training CSV, retrain the ML model, update ModelVersion record."""
+    content = await file.read()
+    ml = MLClient()
+    try:
+        result = ml.retrain_upload(content, file.filename or "upload.csv")
+    except MLServiceError as exc:
+        raise HTTPException(status_code=502, detail=str(exc))
+
+    mv = db.query(ModelVersion).filter(ModelVersion.is_active.is_(True)).first()
+    if mv:
+        mv.algorithm = result.get("algorithm", mv.algorithm)
+        mv.cv_auc = result.get("cv_auc")
+        mv.test_auc = result.get("test_auc")
+        mv.trained_at = datetime.now(timezone.utc)
+        db.commit()
+
+    return result
 
 
 @router.get("/audit-logs")

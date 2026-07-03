@@ -16,6 +16,7 @@ class RoleName(str, enum.Enum):
     RESIDENT = "resident"
     NURSE = "nurse"
     CASE_MANAGER = "case_manager"
+    PHARMACIST = "pharmacist"
     ANALYST = "analyst"
 
 

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CareInsight — Investor Presentation</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --brand: #1e3a5f;
+    --brand-light: #2d5a8e;
+    --accent: #0ea5e9;
+    --accent-light: #e0f2fe;
+    --danger: #dc2626;
+    --success: #16a34a;
+    --warn: #d97706;
+    --bg: #f8fafc;
+    --card: #ffffff;
+    --text: #1e293b;
+    --muted: #64748b;
+    --border: #e2e8f0;
+  }
+
+  html, body { width: 100%; height: 100%; overflow: hidden; background: #0f172a; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: var(--text); }
+
+  .deck { width: 100%; height: 100%; position: relative; }
+  .slide { position: absolute; inset: 0; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 5vw; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; }
+  .slide.active { opacity: 1; pointer-events: auto; }
+
+  .slide-cover { background: linear-gradient(135deg, var(--brand) 0%, #0c2340 100%); color: white; }
+  .slide-light { background: var(--bg); }
+  .slide-dark { background: var(--brand); color: white; }
+
+  .tag { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.12em; font-weight: 600; color: var(--accent); margin-bottom: 0.75rem; }
+  .slide-cover .tag { color: #7dd3fc; }
+  h1 { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; line-height: 1.1; margin-bottom: 0.5rem; }
+  h2 { font-size: clamp(1.5rem, 3.5vw, 2.5rem); font-weight: 700; line-height: 1.2; margin-bottom: 1rem; }
+  h3 { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.5rem; }
+  p.lead { font-size: clamp(1rem, 2vw, 1.3rem); color: var(--muted); max-width: 700px; text-align: center; line-height: 1.6; margin-top: 0.5rem; }
+  .slide-cover p.lead { color: #bfdbfe; }
+  .slide-dark p.lead { color: #93c5fd; }
+
+  .card { background: var(--card); border-radius: 12px; padding: 1.5rem; border: 1px solid var(--border); }
+  .card-grid { display: grid; gap: 1rem; width: 100%; max-width: 900px; }
+  .card-grid.cols-2 { grid-template-columns: repeat(2, 1fr); }
+  .card-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+
+  .stat-big { font-size: clamp(2rem, 4vw, 3rem); font-weight: 800; color: var(--brand); }
+  .stat-label { font-size: 0.8rem; color: var(--muted); margin-top: 0.25rem; }
+  .stat-danger { color: var(--danger); }
+  .stat-success { color: var(--success); }
+  .stat-accent { color: var(--accent); }
+
+  .badge { display: inline-block; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.75rem; font-weight: 600; }
+  .badge-red { background: #fee2e2; color: var(--danger); }
+  .badge-green { background: #dcfce7; color: var(--success); }
+  .badge-blue { background: var(--accent-light); color: #0369a1; }
+
+  .flow { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; justify-content: center; }
+  .flow-step { background: white; border: 2px solid var(--accent); border-radius: 10px; padding: 0.75rem 1.25rem; font-size: 0.9rem; font-weight: 600; text-align: center; min-width: 140px; }
+  .flow-arrow { color: var(--accent); font-size: 1.5rem; font-weight: 700; }
+
+  .team-card { text-align: center; }
+  .avatar { width: 64px; height: 64px; border-radius: 50%; background: var(--accent-light); display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: var(--brand); margin: 0 auto 0.75rem; }
+
+  .progress { position: fixed; bottom: 1.5rem; left: 50%; transform: translateX(-50%); display: flex; gap: 0.5rem; z-index: 10; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: background 0.3s; cursor: pointer; }
+  .dot.active { background: var(--accent); }
+
+  .nav { position: fixed; bottom: 1.5rem; width: 100%; display: flex; justify-content: space-between; padding: 0 2rem; z-index: 10; pointer-events: none; }
+  .nav-btn { pointer-events: auto; background: rgba(255,255,255,0.15); color: white; border: none; border-radius: 8px; padding: 0.5rem 1.2rem; font-size: 1rem; cursor: pointer; backdrop-filter: blur(4px); transition: background 0.2s; }
+  .nav-btn:hover { background: rgba(255,255,255,0.25); }
+
+  .slide-num { position: fixed; top: 1rem; right: 1.5rem; color: rgba(255,255,255,0.4); font-size: 0.8rem; z-index: 10; }
+
+  ul.feature-list { list-style: none; width: 100%; max-width: 700px; }
+  ul.feature-list li { display: flex; align-items: flex-start; gap: 0.75rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); font-size: 0.95rem; }
+  ul.feature-list li:last-child { border-bottom: none; }
+  .icon { font-size: 1.2rem; flex-shrink: 0; }
+
+  table.pricing { width: 100%; max-width: 700px; border-collapse: collapse; }
+  table.pricing th { background: var(--brand); color: white; padding: 0.75rem 1rem; text-align: left; font-size: 0.85rem; }
+  table.pricing td { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.9rem; background: white; }
+  table.pricing tr:last-child td { border-bottom: none; }
+
+  @media (max-width: 600px) {
+    .card-grid.cols-2, .card-grid.cols-3 { grid-template-columns: 1fr; }
+    .flow { flex-direction: column; }
+    .flow-arrow { transform: rotate(90deg); }
+  }
+</style>
+</head>
+<body>
+<div class="deck" id="deck">
+
+  <!-- SLIDE 1: Cover -->
+  <div class="slide slide-cover active">
+    <div class="tag">Investor Presentation · 2026</div>
+    <h1>CareInsight</h1>
+    <p class="lead">MENA's readmission intelligence platform — predict who will return before they leave.</p>
+    <div style="margin-top:2rem; display:flex; gap:1rem; flex-wrap:wrap; justify-content:center;">
+      <span class="badge badge-blue">AI-Powered Prediction</span>
+      <span class="badge badge-blue">SHAP Explanations</span>
+      <span class="badge badge-blue">Clinical Decision Support</span>
+    </div>
+  </div>
+
+  <!-- SLIDE 2: Problem -->
+  <div class="slide slide-light">
+    <div class="tag">The Problem</div>
+    <h2 style="text-align:center;">Hospitals are flying blind at discharge</h2>
+    <div class="card-grid cols-3" style="margin-top:2rem;">
+      <div class="card" style="text-align:center;">
+        <div class="stat-big stat-danger">13%</div>
+        <div class="stat-label">30-day readmission rate in Lebanese private hospitals</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="stat-big stat-danger">$5K–8K</div>
+        <div class="stat-label">Average cost per avoidable readmission</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="stat-big stat-danger">0</div>
+        <div class="stat-label">MENA hospitals with a clinical readmission prediction tool</div>
+      </div>
+    </div>
+    <p class="lead" style="margin-top:1.5rem;">Clinicians rely on intuition. Case managers don't know which patients need intervention. The right call could prevent the readmission entirely.</p>
+  </div>
+
+  <!-- SLIDE 3: Solution -->
+  <div class="slide slide-dark">
+    <div class="tag">The Solution</div>
+    <h2 style="text-align:center; color:white;">CareInsight flags the right patients, before discharge</h2>
+    <div class="flow" style="margin-top:2rem;">
+      <div class="flow-step">Admission data<br/><small style="font-weight:400;color:var(--muted);">labs, vitals, history</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">ML Risk Score<br/><small style="font-weight:400;color:var(--muted);">XGBoost + SHAP</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">AI Copilot<br/><small style="font-weight:400;color:var(--muted);">clinical explanation</small></div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">Intervention<br/><small style="font-weight:400;color:var(--muted);">discharge checklist</small></div>
+    </div>
+    <p class="lead" style="margin-top:1.5rem;">Not a replacement for Epic. The intelligence layer that hospitals without Epic have never had.</p>
+  </div>
+
+  <!-- SLIDE 4: Product -->
+  <div class="slide slide-light">
+    <div class="tag">The Product</div>
+    <h2 style="text-align:center;">Built for clinical teams, not IT departments</h2>
+    <ul class="feature-list" style="margin-top:1.5rem;">
+      <li><span class="icon">🏥</span><div><strong>Ward Risk View</strong> — Every admitted patient ranked by readmission risk. The morning view your case managers need.</div></li>
+      <li><span class="icon">🔍</span><div><strong>SHAP Explanations</strong> — Not just a score. "This patient is high risk because of poor follow-up compliance and 3 prior admissions."</div></li>
+      <li><span class="icon">🤖</span><div><strong>AI Clinical Copilot</strong> — Ask why in plain language. Get clinical context. Powered by Gemini 2.5 Flash.</div></li>
+      <li><span class="icon">✅</span><div><strong>Smart Discharge Checklist</strong> — Auto-generated, patient-specific interventions. Tracked per clinician.</div></li>
+      <li><span class="icon">📊</span><div><strong>Model Transparency</strong> — Algorithm, AUC, feature importances. Built for clinical governance teams.</div></li>
+    </ul>
+  </div>
+
+  <!-- SLIDE 5: Market -->
+  <div class="slide slide-light">
+    <div class="tag">Market Opportunity</div>
+    <h2 style="text-align:center;">Lebanon is the beachhead. MENA is the prize.</h2>
+    <div class="card-grid cols-3" style="margin-top:2rem;">
+      <div class="card" style="text-align:center;">
+        <div class="stat-big">150+</div>
+        <div class="stat-label">Private hospitals in Lebanon</div>
+        <div class="badge badge-blue" style="margin-top:0.5rem;">Beachhead market</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="stat-big">2,000+</div>
+        <div class="stat-label">Hospitals in Saudi Arabia</div>
+        <div class="badge badge-green" style="margin-top:0.5rem;">Year 3 target</div>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div class="stat-big">$50M+</div>
+        <div class="stat-label">Realistic ARR potential at 5% MENA penetration</div>
+        <div class="badge badge-red" style="margin-top:0.5rem;">Long-term vision</div>
+      </div>
+    </div>
+    <p class="lead" style="margin-top:1.5rem;">Epic costs $50–100M to implement. It will never reach 95% of MENA hospitals. We serve the gap.</p>
+  </div>
+
+  <!-- SLIDE 6: Traction -->
+  <div class="slide slide-dark">
+    <div class="tag">Traction &amp; Validation</div>
+    <h2 style="text-align:center; color:white;">Validated by experts. Backed by academia. Next: clinical.</h2>
+    <div class="card-grid cols-3" style="margin-top:2rem;">
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">🏆</div>
+        <h3>2nd Place</h3>
+        <p style="font-size:0.85rem;color:var(--muted);">Symz Capital AI Competition — judged by investors and healthcare faculty</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">🎓</div>
+        <h3>LAU Backed</h3>
+        <p style="font-size:0.85rem;color:var(--muted);">Faculty advisor from Lebanese American University connected us to our first hospital prospect</p>
+      </div>
+      <div class="card" style="text-align:center;">
+        <div style="font-size:2rem;margin-bottom:0.5rem;">🏥</div>
+        <h3>Rizk Hospital</h3>
+        <p style="font-size:0.85rem;color:var(--muted);">Pilot meeting scheduled with one of Lebanon's top private hospitals</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 7: Business Model -->
+  <div class="slide slide-light">
+    <div class="tag">Business Model</div>
+    <h2 style="text-align:center;">Simple SaaS. Pilot → License → Expand.</h2>
+    <table class="pricing" style="margin-top:2rem;">
+      <thead>
+        <tr>
+          <th>Stage</th>
+          <th>Price</th>
+          <th>What's included</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Pilot (3 months)</strong></td>
+          <td><strong>$15,000 flat</strong></td>
+          <td>Deployment, model training on hospital data, onboarding</td>
+        </tr>
+        <tr>
+          <td>Annual license (small)</td>
+          <td>$800/mo per 100 beds</td>
+          <td>50–200 bed hospital: ~$9,600/year</td>
+        </tr>
+        <tr>
+          <td>Annual license (Rizk scale)</td>
+          <td>~$2,400/month</td>
+          <td>300+ beds: ~$28,800/year</td>
+        </tr>
+        <tr>
+          <td style="color:var(--success);font-weight:600;">Year 1 target (3 hospitals)</td>
+          <td style="color:var(--success);font-weight:600;">~$72K ARR</td>
+          <td>Rizk + 2 Lebanese hospitals post-pilot</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- SLIDE 8: The Ask -->
+  <div class="slide slide-light">
+    <div class="tag">The Ask</div>
+    <h2 style="text-align:center;">$150,000 seed to reach first revenue</h2>
+    <div class="card-grid cols-3" style="margin-top:2rem; max-width:900px;">
+      <div class="card">
+        <div class="stat-big stat-accent">$40K</div>
+        <h3 style="margin-top:0.5rem;">Rizk Hospital Pilot</h3>
+        <p style="font-size:0.85rem;color:var(--muted);">Model training on real patient data + implementation + clinical onboarding</p>
+      </div>
+      <div class="card">
+        <div class="stat-big stat-accent">$30K</div>
+        <h3 style="margin-top:0.5rem;">FHIR Integration</h3>
+        <p style="font-size:0.85rem;color:var(--muted);">Connect to any hospital's EHR system — makes us enterprise-ready</p>
+      </div>
+      <div class="card">
+        <div class="stat-big stat-accent">$80K</div>
+        <h3 style="margin-top:0.5rem;">12 Months Runway</h3>
+        <p style="font-size:0.85rem;color:var(--muted);">Founder runway + part-time developer + clinical advisor</p>
+      </div>
+    </div>
+    <p class="lead" style="margin-top:1.5rem;">At the end of 12 months: a validated model on real Lebanese patient data, a reference customer, and outcome data that proves ROI.</p>
+  </div>
+
+  <!-- SLIDE 9: Team -->
+  <div class="slide slide-dark">
+    <div class="tag">Team</div>
+    <h2 style="text-align:center; color:white;">Technical founder, clinical network, academic backing</h2>
+    <div class="card-grid cols-3" style="margin-top:2rem;">
+      <div class="card team-card">
+        <div class="avatar">JA</div>
+        <h3>Jad Assaf</h3>
+        <p style="font-size:0.8rem;color:var(--muted);">Founder &amp; Technical Lead · Full-stack + ML · Built entire platform</p>
+      </div>
+      <div class="card team-card">
+        <div class="avatar">🎓</div>
+        <h3>LAU Advisor</h3>
+        <p style="font-size:0.8rem;color:var(--muted);">Faculty advisor providing clinical guidance and hospital introductions</p>
+      </div>
+      <div class="card team-card">
+        <div class="avatar">+</div>
+        <h3>Hiring with investment</h3>
+        <p style="font-size:0.8rem;color:var(--muted);">Second engineer + clinical co-founder / advisor from the hospital world</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- SLIDE 10: Close -->
+  <div class="slide slide-cover">
+    <div class="tag">Thank you</div>
+    <h1>Let's build this together</h1>
+    <p class="lead">Rizk Hospital pilot meeting is our next milestone. With your support, it becomes our first signed customer and the proof point we need to expand across Lebanon and into the Gulf.</p>
+    <div style="margin-top:2rem; padding:1.5rem 2rem; background:rgba(255,255,255,0.1); border-radius:12px; text-align:center;">
+      <div style="font-size:0.8rem;color:#7dd3fc;margin-bottom:0.5rem;">Contact</div>
+      <div style="font-weight:600; font-size:1.1rem; color:white;">jad.assaf01@lau.edu</div>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- Navigation -->
+<div class="progress" id="progress"></div>
+<div class="nav">
+  <button class="nav-btn" id="prev">← Prev</button>
+  <button class="nav-btn" id="next">Next →</button>
+</div>
+<div class="slide-num" id="slide-num"></div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.getElementById('progress');
+  const slideNum = document.getElementById('slide-num');
+  let current = 0;
+
+  slides.forEach((_, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.addEventListener('click', () => goTo(i));
+    dots.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots.children[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, slides.length - 1));
+    slides[current].classList.add('active');
+    dots.children[current].classList.add('active');
+    slideNum.textContent = `${current + 1} / ${slides.length}`;
+  }
+
+  document.getElementById('prev').addEventListener('click', () => goTo(current - 1));
+  document.getElementById('next').addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown' || e.key === ' ') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+    if (e.key === 'Home') goTo(0);
+    if (e.key === 'End') goTo(slides.length - 1);
+  });
+
+  goTo(0);
+</script>
+</body>
+</html>

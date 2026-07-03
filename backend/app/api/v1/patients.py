@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import require_any_clinical_role, require_role
 from app.db.session import get_db
+from app.models.hospital import Department
 from app.models.patient import Patient
 from app.models.user import RoleName, User
 from app.schemas.patient import PatientCreate, PatientList, PatientRead
@@ -65,6 +66,20 @@ def create_patient(
     db.commit()
     db.refresh(patient)
     return PatientRead.model_validate(patient)
+
+
+@router.get("/departments")
+def list_departments(
+    db: Session = Depends(get_db),
+    current: User = Depends(require_any_clinical_role()),
+) -> list[dict]:
+    depts = (
+        db.query(Department)
+        .filter(Department.hospital_id == current.hospital_id)
+        .order_by(Department.name)
+        .all()
+    )
+    return [{"id": str(d.id), "name": d.name, "code": d.code} for d in depts]
 
 
 @router.get("/{patient_id}", response_model=PatientRead)
