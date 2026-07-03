@@ -5,6 +5,10 @@ export default {
   theme: {
     extend: {
       colors: {
+        ink:      "#0f0f0f",
+        paper:    "#ffffff",
+        tint:     "#f5f5f3",
+        hairline: "#e5e5e5",
         navy: {
           950: "#060d16",
           900: "#0c1f33",
@@ -42,6 +46,8 @@ export default {
         sans:    ["DM Sans", "system-ui", "sans-serif"],
         display: ["Josefin Sans", "sans-serif"],
         mono:    ["IBM Plex Mono", "Menlo", "monospace"],
+        hero:    ["Archivo", "system-ui", "sans-serif"],
+        serifit: ["Instrument Serif", "Georgia", "serif"],
       },
       boxShadow: {
         focus:        "0 0 0 3px rgba(2, 132, 199, 0.25)",

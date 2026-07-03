@@ -47,3 +47,4 @@ backend/outputs/
 *.sqlite
 *.sqlite3
 backend/backend.err
+.superpowers/
