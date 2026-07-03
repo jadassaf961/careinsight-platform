@@ -260,7 +260,7 @@ export function PatientChart() {
                       type="checkbox"
                       className="mt-0.5 rounded border-hairline accent-ink shrink-0"
                     />
-                    <span className="text-sm text-slate-700 flex-1 leading-snug">{r.text}</span>
+                    <span className="text-sm text-ink/80 flex-1 leading-snug">{r.text}</span>
                     {r.source !== "base" && (
                       <Badge variant="outline" size="xs">{r.source}</Badge>
                     )}
