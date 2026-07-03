@@ -4,6 +4,9 @@ import { LandingNav } from "@/components/landing/LandingNav";
 import { Hero } from "@/components/landing/Hero";
 import { Marquee } from "@/components/landing/Marquee";
 import { ProductShowcase } from "@/components/landing/ProductShowcase";
+import { HowItWorks } from "@/components/landing/HowItWorks";
+import { Numbers } from "@/components/landing/Numbers";
+import { Pricing } from "@/components/landing/Pricing";
 
 export function Landing() {
   useEffect(() => {
@@ -27,6 +30,9 @@ export function Landing() {
       <Hero />
       <Marquee />
       <ProductShowcase />
+      <HowItWorks />
+      <Numbers />
+      <Pricing />
     </div>
   );
 }
