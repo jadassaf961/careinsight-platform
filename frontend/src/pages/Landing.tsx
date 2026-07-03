@@ -3,6 +3,7 @@ import Lenis from "lenis";
 import { LandingNav } from "@/components/landing/LandingNav";
 import { Hero } from "@/components/landing/Hero";
 import { Marquee } from "@/components/landing/Marquee";
+import { ProductShowcase } from "@/components/landing/ProductShowcase";
 
 export function Landing() {
   useEffect(() => {
@@ -25,6 +26,7 @@ export function Landing() {
       <LandingNav />
       <Hero />
       <Marquee />
+      <ProductShowcase />
     </div>
   );
 }
