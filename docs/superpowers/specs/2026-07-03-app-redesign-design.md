@@ -8,7 +8,7 @@
 
 Phase 1 shipped a Cuberto-style monochrome marketing landing page. Phase 2 brings the same design language into the logged-in product so the screen an investor sees after clicking "see it live" matches the quality of the screen before it. Full redesign of all eight app screens, executed design-system-first in four stages so the app works after every stage.
 
-**Non-negotiable:** clinical color survives. Risk red/amber/green, escalation priorities, and the emerald demo badge are safety signals, not decoration. The monochrome treatment applies to chrome only — after this redesign, color on screen always means clinical state.
+**Color principle:** color on screen always means clinical or system state — never decoration. But the clinical palette itself is redesigned: the current bright Tailwind defaults (#dc2626 / #d97706 / #16a34a / emerald-500) are replaced with one curated, desaturated family designed to sit coherently on the ink/paper monochrome, so the whole screen reads as a single professional composition (see §2).
 
 ## 2. Design language translation
 
@@ -16,7 +16,18 @@ Phase 1 shipped a Cuberto-style monochrome marketing landing page. Phase 2 bring
 - Surfaces: `paper` (#ffffff) backgrounds, `tint` (#f5f5f3) grouped areas, `hairline` (#e5e5e5) borders
 - Chrome ink: `ink` (#0f0f0f) replaces navy/brand for text, buttons, links, focus rings
 - The `brand-*` teal palette disappears from chrome (kept in the config during migration; a final sweep may remove unused tokens)
-- Risk tokens unchanged
+
+### Clinical palette (redesigned — one coherent, desaturated family)
+
+The `risk.*` tokens are re-valued so clinical colors feel designed with the monochrome, not pasted on. Deep, slightly muted foregrounds (all AA-contrast on white) with barely-there warm washes for backgrounds:
+
+| Token | Foreground | Background wash | Border |
+|---|---|---|---|
+| `risk.high` | `#B42318` | `#FEF3F2` | `#FECDCA` |
+| `risk.medium` | `#B54708` | `#FFFAEB` | `#FEDF89` |
+| `risk.low` / success | `#067647` | `#ECFDF3` | `#ABEFC6` |
+
+Everything green-ish converges on the single `risk.low`/success family: the demo badge, the simulated phone styling, check-in "responded" states, and success chips all use `#067647` on `#ECFDF3` — no separate emerald. Escalation priorities map to the same three tokens. Result: exactly one accent family on top of ink/paper, and every instance of it means state.
 
 ### Typography
 - **Archivo** becomes the app display face: page titles, section headings, stat numbers. The `display` fontFamily token is repointed from Josefin Sans to Archivo (Josefin removed from the font link once unused).
@@ -41,18 +52,18 @@ Cards flatten: hairline borders, no shadows, more padding. Grouped content separ
 
 ## 4. AppShell
 
-Sidebar: paper background, hairline right border, lowercase `careinsight` wordmark in Archivo, nav items ink/50 → ink with a small ink dot marker when active, minimal user block, ink "sign out" link. Demo badge unchanged (emerald, status signal). Main content area stays `tint` or goes `paper` — whichever reads calmer against flattened cards (decide in implementation; default `paper` with `tint` reserved for grouped sub-areas).
+Sidebar: paper background, hairline right border, lowercase `careinsight` wordmark in Archivo, nav items ink/50 → ink with a small ink dot marker when active, minimal user block, ink "sign out" link. Demo badge restyled to the success family (§2 palette). Main content area stays `tint` or goes `paper` — whichever reads calmer against flattened cards (decide in implementation; default `paper` with `tint` reserved for grouped sub-areas).
 
 ## 5. Screens
 
 1. **Login** — split screen. Left (hidden `md:` down): paper mini-hero "Every patient, *followed home.*" + thin marquee band at the bottom. Right: centered form — micro-labels, underline inputs, ink pill "sign in", demo accounts hint in mono.
 2. **Discharge Board** — title "Discharge *readiness.*"; stats as oversized-number row; group headers as Archivo + serif-italic counts ("Blocked — *3 patients*"); flat hairline tables, micro-label column heads, dot risk badges; blocked group keeps a thin red left rule as its only colored chrome.
-3. **Patient Chart** — editorial header: name at ~3rem Archivo, mono meta-line (MRN · DOB · sex), inline risk dot; ink underline tabs; all cards → hairline sections; Transition tab/timeline/phone inherit (phone keeps emerald demo styling).
+3. **Patient Chart** — editorial header: name at ~3rem Archivo, mono meta-line (MRN · DOB · sex), inline risk dot; ink underline tabs; all cards → hairline sections; Transition tab/timeline/phone inherit (phone restyled to the success family).
 4. **Clinician & Case Manager dashboards** — oversized stat numbers with count-ups; escalation queue rows: priority dot, Archivo patient name, hairline separators, ink resolve affordance.
 5. **Admin dashboard** — outcomes panel numbers oversized + count-up; ROI calculator with underline inputs and Archivo results; `.card` divs get hairline treatment.
 6. **Patient Search** — near-hero-sized underline search input; results as hairline rows.
 7. **ModelLab** — component inheritance + micro-labels/Archivo numbers; no layout invention.
-8. **Shared widgets** (`EscalationQueue`, `MyTasksWidget`, `OutcomesPanel`, `SimulatedPhone`, `DemoBadge`) — same vocabulary; phone/badge keep emerald.
+8. **Shared widgets** (`EscalationQueue`, `MyTasksWidget`, `OutcomesPanel`, `SimulatedPhone`, `DemoBadge`) — same vocabulary; phone/badge move to the §2 success family.
 
 ## 6. Motion (subtle & purposeful)
 
