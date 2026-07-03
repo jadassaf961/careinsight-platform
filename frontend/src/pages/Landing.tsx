@@ -1,5 +1,32 @@
+import { useEffect } from "react";
+import Lenis from "lenis";
+import { LandingNav } from "@/components/landing/LandingNav";
+import { Hero } from "@/components/landing/Hero";
+import { Marquee } from "@/components/landing/Marquee";
+
 export function Landing() {
-  return <div className="min-h-screen bg-paper" />;
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    const lenis = new Lenis({ duration: 1.15 });
+    let raf = 0;
+    const loop = (t: number) => {
+      lenis.raf(t);
+      raf = requestAnimationFrame(loop);
+    };
+    raf = requestAnimationFrame(loop);
+    return () => {
+      cancelAnimationFrame(raf);
+      lenis.destroy();
+    };
+  }, []);
+
+  return (
+    <div className="min-h-screen bg-paper font-sans text-ink antialiased">
+      <LandingNav />
+      <Hero />
+      <Marquee />
+    </div>
+  );
 }
 
 export default Landing;
