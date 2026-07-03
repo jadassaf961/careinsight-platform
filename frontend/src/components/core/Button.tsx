@@ -14,16 +14,16 @@ interface ButtonProps {
 }
 
 const variantClasses: Record<string, string> = {
-  primary:   'bg-brand-600 text-white border-transparent hover:bg-brand-700 active:bg-brand-800',
-  secondary: 'bg-white text-slate-700 border-slate-300 hover:bg-slate-50',
-  ghost:     'bg-transparent text-brand-600 border-transparent hover:bg-slate-100',
+  primary:   'bg-ink text-paper border-transparent hover:bg-ink/85',
+  secondary: 'bg-paper text-ink border-hairline hover:bg-tint',
+  ghost:     'bg-transparent text-ink/70 border-transparent hover:text-ink hover:bg-tint',
   danger:    'bg-risk-high text-white border-transparent hover:opacity-90',
 };
 
 const sizeClasses: Record<string, string> = {
-  sm: 'text-[0.7rem] px-2.5 py-1',
-  md: 'text-[0.72rem] px-4 py-2',
-  lg: 'text-sm px-5 py-2.5',
+  sm: 'text-xs px-3.5 py-1.5',
+  md: 'text-sm px-5 py-2',
+  lg: 'text-sm px-6 py-2.5',
 };
 
 export function Button({
@@ -45,11 +45,11 @@ export function Button({
       onClick={disabled || loading ? undefined : onClick}
       className={[
         'inline-flex items-center justify-center gap-1.5',
-        'font-sans font-medium leading-none whitespace-nowrap',
-        'rounded-md border',
-        'uppercase tracking-btn',
+        'font-semibold leading-none whitespace-nowrap',
+        'rounded-full border',
+        'lowercase font-display',
         'transition-all duration-150',
-        'focus:outline-none focus:shadow-focus',
+        'focus:outline-none focus-visible:ring-2 focus-visible:ring-ink/15',
         'disabled:opacity-50 disabled:cursor-not-allowed',
         variantClasses[variant],
         sizeClasses[size],

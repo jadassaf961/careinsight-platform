@@ -30,19 +30,18 @@ export function Card({
   return (
     <div
       className={[
-        'bg-white rounded-lg border border-slate-200 overflow-hidden',
-        elevated ? 'shadow-md' : 'shadow-sm',
+        'bg-paper rounded-xl border border-hairline overflow-hidden',
         className,
       ].join(' ')}
     >
       {(heading || action) && (
         <div className={`flex items-start justify-between gap-4 ${paddingClasses[padding]} pb-0`}>
           <div>
-            <h3 className="font-sans text-base font-semibold text-slate-800 m-0 leading-snug">
+            <h3 className="font-display text-base font-semibold text-ink m-0 leading-snug tracking-tight">
               {heading}
             </h3>
             {subheading && (
-              <p className="font-sans text-sm text-slate-500 mt-0.5 m-0">{subheading}</p>
+              <p className="font-sans text-sm text-ink/50 mt-0.5 m-0">{subheading}</p>
             )}
           </div>
           {action && <div className="flex-shrink-0">{action}</div>}

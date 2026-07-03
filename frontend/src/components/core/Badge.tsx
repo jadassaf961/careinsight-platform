@@ -7,13 +7,13 @@ interface BadgeProps {
 }
 
 const variantStyles: Record<string, React.CSSProperties> = {
-  default: { background: '#f1f5f9', color: '#475569', borderColor: '#e2e8f0' },
-  primary: { background: '#e0f2fe', color: '#075985', borderColor: '#bae6fd' },
-  success: { background: '#dcfce7', color: '#16a34a', borderColor: '#86efac' },
-  danger:  { background: '#fee2e2', color: '#dc2626', borderColor: '#fca5a5' },
-  warning: { background: '#fef3c7', color: '#d97706', borderColor: '#fcd34d' },
-  navy:    { background: '#1e3a5f', color: '#ffffff', borderColor: 'transparent' },
-  outline: { background: 'transparent', color: '#64748b', borderColor: '#94a3b8' },
+  default: { background: '#f5f5f3', color: '#565656', borderColor: '#e5e5e5' },
+  primary: { background: 'transparent', color: '#0f0f0f', borderColor: '#0f0f0f' },
+  success: { background: '#ECFDF3', color: '#067647', borderColor: '#ABEFC6' },
+  danger:  { background: '#FEF3F2', color: '#B42318', borderColor: '#FECDCA' },
+  warning: { background: '#FFFAEB', color: '#B54708', borderColor: '#FEDF89' },
+  navy:    { background: '#0f0f0f', color: '#ffffff', borderColor: 'transparent' },
+  outline: { background: 'transparent', color: '#565656', borderColor: '#e5e5e5' },
 };
 
 const sizeClasses: Record<string, string> = {
