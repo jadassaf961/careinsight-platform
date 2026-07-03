@@ -1,5 +1,6 @@
+import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider } from "@/auth/AuthContext";
+import { AuthProvider, useAuth } from "@/auth/AuthContext";
 import { RequireAuth } from "@/auth/RequireAuth";
 import { AppShell } from "@/components/AppShell";
 import { Login } from "@/pages/Login";
@@ -11,10 +12,24 @@ import { AdminDashboard } from "@/pages/AdminDashboard";
 import { ModelLab } from "@/pages/ModelLab";
 import { WardView } from "@/pages/WardView";
 
+const Landing = lazy(() => import("@/pages/Landing"));
+
+function PublicHome() {
+  const { user, loading } = useAuth();
+  if (loading) return null;
+  if (user) return <Navigate to="/ward" replace />;
+  return (
+    <Suspense fallback={null}>
+      <Landing />
+    </Suspense>
+  );
+}
+
 export default function App() {
   return (
     <AuthProvider>
       <Routes>
+        <Route path="/" element={<PublicHome />} />
         <Route path="/login" element={<Login />} />
         <Route
           element={
@@ -30,7 +45,6 @@ export default function App() {
           <Route path="/dashboard/admin" element={<AdminDashboard />} />
           <Route path="/model-lab" element={<ModelLab />} />
           <Route path="/ward" element={<WardView />} />
-          <Route index element={<Navigate to="/ward" replace />} />
         </Route>
         <Route path="*" element={<Navigate to="/ward" replace />} />
       </Routes>
