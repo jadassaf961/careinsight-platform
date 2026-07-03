@@ -7,6 +7,7 @@ import { ProductShowcase } from "@/components/landing/ProductShowcase";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Numbers } from "@/components/landing/Numbers";
 import { Pricing } from "@/components/landing/Pricing";
+import { LandingFooter } from "@/components/landing/LandingFooter";
 
 export function Landing() {
   useEffect(() => {
@@ -33,6 +34,7 @@ export function Landing() {
       <HowItWorks />
       <Numbers />
       <Pricing />
+      <LandingFooter />
     </div>
   );
 }
