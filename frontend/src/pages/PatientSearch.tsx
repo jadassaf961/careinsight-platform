@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { ApiError, api, Department, PatientCreate, PatientList } from "@/lib/api";
 import { Button } from "@/components/core/Button";
+import { SectionLabel } from "@/components/core/SectionLabel";
 
 interface AdmissionFormData {
   department_id: string;
@@ -44,14 +45,6 @@ const EMPTY_ADMISSION: AdmissionFormData = {
 };
 
 const STEP_TITLES = ["Patient Identity", "This Admission", "Clinical Data"];
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="font-display text-[0.65rem] font-semibold tracking-allcaps uppercase text-slate-400 mb-2">
-      {children}
-    </div>
-  );
-}
 
 function computeBmi(weight: string, height: string): number | null {
   const w = parseFloat(weight);
@@ -172,58 +165,59 @@ export function PatientSearch() {
   const bmi = computeBmi(admForm.weight_kg, admForm.height_cm);
 
   const inputCls =
-    "w-full px-3 py-2 text-sm border border-slate-300 rounded-md font-sans " +
-    "focus:outline-none focus:shadow-focus focus:border-brand-600 bg-white";
-  const labelCls = "block text-xs font-medium text-slate-600 mb-1";
+    "w-full px-0 py-2 text-sm border-0 border-b border-hairline rounded-none font-sans bg-transparent " +
+    "focus:outline-none focus:border-ink placeholder:text-ink/30";
+  const labelCls = "block font-display text-[0.65rem] font-semibold uppercase tracking-[0.2em] text-ink/40 mb-1";
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h1 className="font-display text-2xl font-semibold text-navy-700">Patients</h1>
-          <p className="text-sm text-slate-500 mt-0.5">Search and manage admitted patients.</p>
-        </div>
-        <div className="flex gap-3">
-          <input
-            type="search"
-            placeholder="Search MRN or name…"
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            className="px-3 py-2 text-sm border border-slate-300 rounded-md w-72 font-sans
-                       focus:outline-none focus:shadow-focus focus:border-brand-600"
-          />
+      <div className="mb-8">
+        <div className="flex items-start justify-between gap-4 mb-6">
+          <div>
+            <h1 className="font-display text-4xl font-bold tracking-[-0.03em] text-ink">
+              Find a <em className="font-serifit font-normal italic">patient.</em>
+            </h1>
+            <p className="text-sm text-ink/50 mt-2">Search and manage admitted patients.</p>
+          </div>
           <Button variant="primary" onClick={() => setShowModal(true)}>
-            + Add Patient
+            + add patient
           </Button>
         </div>
+        <input
+          type="search"
+          placeholder="Search by MRN or name…"
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          className="w-full bg-transparent font-display text-2xl md:text-3xl font-semibold tracking-tight text-ink placeholder:text-ink/25 border-0 border-b border-hairline focus:border-ink outline-none py-3 transition-colors"
+        />
       </div>
 
-      <div className="bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+      <div className="bg-paper border-t border-hairline overflow-hidden">
         <table className="w-full text-sm">
-          <thead className="bg-slate-50 border-b border-slate-200">
+          <thead>
             <tr>
-              <th className="text-left px-4 py-3 font-sans font-medium text-slate-500 text-xs uppercase tracking-wide">MRN</th>
-              <th className="text-left px-4 py-3 font-sans font-medium text-slate-500 text-xs uppercase tracking-wide">Name</th>
-              <th className="text-left px-4 py-3 font-sans font-medium text-slate-500 text-xs uppercase tracking-wide">DOB</th>
-              <th className="text-left px-4 py-3 font-sans font-medium text-slate-500 text-xs uppercase tracking-wide">Sex</th>
+              <th className="text-left px-4 py-3 font-display font-semibold text-ink/40 text-[0.6rem] uppercase tracking-[0.2em]">MRN</th>
+              <th className="text-left px-4 py-3 font-display font-semibold text-ink/40 text-[0.6rem] uppercase tracking-[0.2em]">Name</th>
+              <th className="text-left px-4 py-3 font-display font-semibold text-ink/40 text-[0.6rem] uppercase tracking-[0.2em]">DOB</th>
+              <th className="text-left px-4 py-3 font-display font-semibold text-ink/40 text-[0.6rem] uppercase tracking-[0.2em]">Sex</th>
               <th className="px-4 py-3" />
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100">
+          <tbody className="divide-y divide-hairline">
             {isLoading && (
-              <tr><td colSpan={5} className="p-8 text-center text-slate-400 text-sm">Loading…</td></tr>
+              <tr><td colSpan={5} className="p-8 text-center text-ink/40 text-sm">Loading…</td></tr>
             )}
             {!isLoading && data?.items.length === 0 && (
-              <tr><td colSpan={5} className="p-8 text-center text-slate-400 text-sm">No patients found.</td></tr>
+              <tr><td colSpan={5} className="p-8 text-center text-ink/40 text-sm">No patients found.</td></tr>
             )}
             {data?.items.map((p) => (
-              <tr key={p.id} className="hover:bg-slate-50 cursor-pointer transition-colors duration-100">
-                <td className="px-4 py-3 font-mono text-xs text-slate-500">{p.mrn}</td>
-                <td className="px-4 py-3 font-medium text-slate-800">{p.last_name}, {p.first_name}</td>
-                <td className="px-4 py-3 text-slate-600">{p.dob}</td>
-                <td className="px-4 py-3 text-slate-600">{p.sex}</td>
+              <tr key={p.id} className="hover:bg-tint cursor-pointer transition-colors duration-100">
+                <td className="px-4 py-3 font-mono text-xs text-ink/50">{p.mrn}</td>
+                <td className="px-4 py-3 font-medium text-ink">{p.last_name}, {p.first_name}</td>
+                <td className="px-4 py-3 text-ink/60">{p.dob}</td>
+                <td className="px-4 py-3 text-ink/60">{p.sex}</td>
                 <td className="px-4 py-3 text-right">
-                  <Link to={`/patients/${p.id}`} className="text-brand-600 hover:text-brand-700 text-xs font-medium">
+                  <Link to={`/patients/${p.id}`} className="text-ink/40 hover:text-ink text-xs font-medium transition-colors">
                     Open chart →
                   </Link>
                 </td>
@@ -232,7 +226,7 @@ export function PatientSearch() {
           </tbody>
         </table>
         {data && (
-          <div className="px-4 py-2 border-t border-slate-100 bg-slate-50 text-xs text-slate-400">
+          <div className="px-4 py-2 border-t border-hairline bg-tint text-xs text-ink/40">
             Showing {data.items.length} of {data.total} patients
           </div>
         )}
@@ -241,20 +235,20 @@ export function PatientSearch() {
       {/* ── Add Patient Modal ─────────────────────────────────── */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-          <div className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[92vh] flex flex-col">
+          <div className="bg-paper rounded-xl border border-hairline w-full max-w-2xl max-h-[92vh] flex flex-col">
 
             {/* Header + step indicator */}
-            <div className="px-6 pt-6 pb-5 border-b border-slate-100 shrink-0">
+            <div className="px-6 pt-6 pb-5 border-b border-hairline shrink-0">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h2 className="font-display text-lg font-semibold text-navy-700">Add New Patient</h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <h2 className="font-display text-lg font-bold tracking-tight text-ink">Add New Patient</h2>
+                  <p className="text-xs text-ink/40 mt-0.5">
                     Step {step} of 3 — {STEP_TITLES[step - 1]}
                   </p>
                 </div>
                 <button
                   onClick={closeModal}
-                  className="text-slate-400 hover:text-slate-600 transition-colors text-2xl leading-none mt-0.5"
+                  className="text-ink/40 hover:text-ink/60 transition-colors text-2xl leading-none mt-0.5"
                 >
                   ×
                 </button>
@@ -271,22 +265,22 @@ export function PatientSearch() {
                       <div className="flex items-center gap-2 shrink-0">
                         <div className={[
                           "w-6 h-6 rounded-full flex items-center justify-center text-xs font-semibold transition-all",
-                          done ? "bg-brand-600 text-white" :
-                          active ? "bg-brand-600 text-white ring-2 ring-brand-100" :
-                          "bg-slate-100 text-slate-400",
+                          done ? "bg-ink text-paper" :
+                          active ? "bg-ink text-paper ring-2 ring-ink/10" :
+                          "bg-tint text-ink/40",
                         ].join(" ")}>
                           {done ? "✓" : s}
                         </div>
                         <span className={[
                           "text-xs hidden sm:block",
-                          active ? "text-brand-600 font-medium" :
-                          done ? "text-slate-500" : "text-slate-400",
+                          active ? "text-ink font-medium" :
+                          done ? "text-ink/50" : "text-ink/40",
                         ].join(" ")}>
                           {title}
                         </span>
                       </div>
                       {s < 3 && (
-                        <div className={`flex-1 h-px mx-3 ${s < step ? "bg-brand-400" : "bg-slate-200"}`} />
+                        <div className={`flex-1 h-px mx-3 ${s < step ? "bg-ink" : "bg-hairline"}`} />
                       )}
                     </div>
                   );
@@ -437,7 +431,7 @@ export function PatientSearch() {
                     </div>
                     <div>
                       <label className={labelCls}>BMI (auto)</label>
-                      <div className="px-3 py-2 text-sm border border-slate-200 rounded-md bg-slate-50 font-mono text-slate-500">
+                      <div className="px-3 py-2 text-sm border border-hairline rounded-md bg-tint font-mono text-ink/50">
                         {bmi !== null ? bmi.toFixed(1) : "—"}
                       </div>
                     </div>
@@ -638,7 +632,7 @@ export function PatientSearch() {
             </div>
 
             {/* Footer nav */}
-            <div className="px-6 py-4 border-t border-slate-100 shrink-0 flex items-center justify-between gap-4">
+            <div className="px-6 py-4 border-t border-hairline shrink-0 flex items-center justify-between gap-4">
               <Button
                 variant="ghost"
                 disabled={addPatient.isPending}

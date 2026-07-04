@@ -3,24 +3,17 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api, ModelStatsResponse, PopulationResponse, RetrainResult } from "@/lib/api";
 import { Button } from "@/components/core/Button";
 import { Card } from "@/components/core/Card";
+import { SectionLabel } from "@/components/core/SectionLabel";
 import { tokenStore } from "@/lib/api";
 
 const THRESHOLD_KEY = "careinsight.default_threshold";
 const GAP_KEY = "careinsight.medium_gap";
 
 const TIER_COLORS = {
-  High:   { text: "#dc2626", bg: "#fee2e2", border: "#fca5a5" },
-  Medium: { text: "#d97706", bg: "#fef3c7", border: "#fcd34d" },
-  Low:    { text: "#16a34a", bg: "#dcfce7", border: "#86efac" },
+  High:   { text: "#B42318", bg: "#FEF3F2", border: "#FECDCA" },
+  Medium: { text: "#B54708", bg: "#FFFAEB", border: "#FEDF89" },
+  Low:    { text: "#067647", bg: "#ECFDF3", border: "#ABEFC6" },
 } as const;
-
-function SectionLabel({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="font-display text-[0.65rem] font-semibold tracking-allcaps uppercase text-slate-400 mb-3">
-      {children}
-    </div>
-  );
-}
 
 function getStored(key: string, fallback: number) {
   return parseFloat(localStorage.getItem(key) ?? String(fallback));
@@ -95,8 +88,10 @@ export function ModelLab() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="font-display text-2xl font-semibold text-navy-700">Model Lab</h1>
-        <p className="text-sm text-slate-500 mt-1">
+        <h1 className="font-display text-4xl font-bold tracking-[-0.03em] text-ink">
+          Model <em className="font-serifit font-normal italic">lab.</em>
+        </h1>
+        <p className="text-sm text-ink/50 mt-2">
           Configure risk thresholds, monitor model performance, and retrain.
         </p>
       </div>
@@ -104,7 +99,7 @@ export function ModelLab() {
       {/* ── Threshold Configuration ─────────────────────────────────────────── */}
       <Card>
         <SectionLabel>Risk Threshold Configuration</SectionLabel>
-        <p className="text-xs text-slate-400 mb-6">
+        <p className="text-xs text-ink/40 mb-6">
           Threshold changes apply to all new predictions. The live preview below
           recalculates tiers against stored probabilities for the {previewTotal} currently
           admitted patients with predictions.
@@ -115,8 +110,8 @@ export function ModelLab() {
           <div className="space-y-6">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-medium text-slate-700">High-risk cutoff</label>
-                <span className="font-mono text-xl font-bold text-navy-700">
+                <label className="text-sm font-medium text-ink/80">High-risk cutoff</label>
+                <span className="font-mono text-xl font-bold text-ink">
                   {(threshold * 100).toFixed(0)}%
                 </span>
               </div>
@@ -124,13 +119,13 @@ export function ModelLab() {
                 type="range" min="0.20" max="0.90" step="0.01"
                 value={threshold}
                 onChange={(e) => setThreshold(parseFloat(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer
+                className="w-full h-2 bg-hairline rounded-full appearance-none cursor-pointer
                   [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5
                   [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full
                   [&::-webkit-slider-thumb]:bg-risk-high [&::-webkit-slider-thumb]:cursor-pointer
                   [&::-webkit-slider-thumb]:shadow-sm"
               />
-              <div className="flex justify-between text-[0.65rem] text-slate-400 mt-1.5">
+              <div className="flex justify-between text-[0.65rem] text-ink/40 mt-1.5">
                 <span>20%</span>
                 <span className="text-risk-high font-medium">High ≥ {(threshold * 100).toFixed(0)}%</span>
                 <span>90%</span>
@@ -139,8 +134,8 @@ export function ModelLab() {
 
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-sm font-medium text-slate-700">Medium-risk band width</label>
-                <span className="font-mono text-base font-semibold text-slate-600">
+                <label className="text-sm font-medium text-ink/80">Medium-risk band width</label>
+                <span className="font-mono text-base font-semibold text-ink/60">
                   {((threshold - gap) * 100).toFixed(0)}–{(threshold * 100).toFixed(0)}%
                 </span>
               </div>
@@ -148,12 +143,12 @@ export function ModelLab() {
                 type="range" min="0.05" max="0.30" step="0.05"
                 value={gap}
                 onChange={(e) => setGap(parseFloat(e.target.value))}
-                className="w-full h-2 bg-slate-200 rounded-full appearance-none cursor-pointer
+                className="w-full h-2 bg-hairline rounded-full appearance-none cursor-pointer
                   [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5
                   [&::-webkit-slider-thumb]:h-5 [&::-webkit-slider-thumb]:rounded-full
                   [&::-webkit-slider-thumb]:bg-risk-medium [&::-webkit-slider-thumb]:cursor-pointer"
               />
-              <div className="flex justify-between text-[0.65rem] text-slate-400 mt-1.5">
+              <div className="flex justify-between text-[0.65rem] text-ink/40 mt-1.5">
                 <span>±5 pp</span>
                 <span className="text-risk-medium font-medium">Gap = {(gap * 100).toFixed(0)} pp</span>
                 <span>±30 pp</span>
@@ -164,12 +159,12 @@ export function ModelLab() {
               <Button variant="primary" onClick={saveConfig}>
                 {isSaved ? "Saved ✓" : "Save Configuration"}
               </Button>
-              <span className="text-xs text-slate-400">
+              <span className="text-xs text-ink/40">
                 Persisted in this browser
               </span>
             </div>
 
-            <div className="text-xs text-slate-400 border border-slate-100 rounded-md p-3 bg-slate-50 font-mono space-y-0.5">
+            <div className="text-xs text-ink/40 border border-hairline rounded-md p-3 bg-tint font-mono space-y-0.5">
               <div>High  ≥ {(threshold * 100).toFixed(0)}%</div>
               <div>Med   {((threshold - gap) * 100).toFixed(0)}% – {(threshold * 100).toFixed(0)}%</div>
               <div>Low   &lt; {((threshold - gap) * 100).toFixed(0)}%</div>
@@ -178,11 +173,11 @@ export function ModelLab() {
 
           {/* Live tier preview */}
           <div>
-            <div className="font-display text-[0.65rem] font-semibold tracking-allcaps uppercase text-slate-400 mb-3">
+            <div className="font-display text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-ink/40 mb-3">
               Live Preview — {previewTotal} patients
             </div>
             {previewTotal === 0 ? (
-              <p className="text-sm text-slate-400">
+              <p className="text-sm text-ink/40">
                 {population.isLoading ? "Loading…" : "No admitted patients with predictions yet."}
               </p>
             ) : (
@@ -235,7 +230,7 @@ export function ModelLab() {
         <Card>
           <SectionLabel>Active Model</SectionLabel>
           {!stats ? (
-            <p className="text-sm text-slate-400">{modelStats.isLoading ? "Loading…" : "No model data."}</p>
+            <p className="text-sm text-ink/40">{modelStats.isLoading ? "Loading…" : "No model data."}</p>
           ) : (
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
@@ -253,12 +248,12 @@ export function ModelLab() {
                     mono: true, large: true,
                   },
                 ].map(({ label, value, mono, large }) => (
-                  <div key={label} className="p-3 rounded-lg bg-slate-50 border border-slate-100">
-                    <div className="font-display text-[0.65rem] font-semibold tracking-allcaps uppercase text-slate-400 mb-1">
+                  <div key={label} className="p-3 rounded-lg bg-tint border border-hairline">
+                    <div className="font-display text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-ink/40 mb-1">
                       {label}
                     </div>
                     <div className={[
-                      large ? "text-2xl font-bold text-navy-700" : "text-sm font-semibold text-slate-700",
+                      large ? "text-2xl font-bold text-ink" : "text-sm font-semibold text-ink/80",
                       mono ? "font-mono" : "font-sans capitalize",
                     ].join(" ")}>
                       {value}
@@ -267,8 +262,8 @@ export function ModelLab() {
                 ))}
               </div>
 
-              <div className="flex items-center gap-2 text-sm text-slate-500 border-t border-slate-100 pt-3">
-                <span className="text-xs text-slate-400">Trained</span>
+              <div className="flex items-center gap-2 text-sm text-ink/50 border-t border-hairline pt-3">
+                <span className="text-xs text-ink/40">Trained</span>
                 <span className="font-mono text-xs">
                   {stats.trained_at
                     ? new Date(stats.trained_at).toLocaleString()
@@ -277,7 +272,7 @@ export function ModelLab() {
               </div>
 
               <div>
-                <div className="font-display text-[0.65rem] font-semibold tracking-allcaps uppercase text-slate-400 mb-2">
+                <div className="font-display text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-ink/40 mb-2">
                   Historical Prediction Distribution ({stats.total_predictions} total)
                 </div>
                 <div className="space-y-1.5">
@@ -286,14 +281,14 @@ export function ModelLab() {
                     const pct = tierTotal > 0 ? (count / tierTotal) * 100 : 0;
                     return (
                       <div key={tier} className="flex items-center gap-2">
-                        <span className="text-xs text-slate-500 w-14">{tier}</span>
-                        <div className="flex-1 h-2 bg-slate-100 rounded-full overflow-hidden">
+                        <span className="text-xs text-ink/50 w-14">{tier}</span>
+                        <div className="flex-1 h-2 bg-tint rounded-full overflow-hidden">
                           <div
                             className="h-full rounded-full"
                             style={{ width: `${pct}%`, background: TIER_COLORS[tier].text }}
                           />
                         </div>
-                        <span className="font-mono text-xs text-slate-600 w-8 text-right">{count}</span>
+                        <span className="font-mono text-xs text-ink/60 w-8 text-right">{count}</span>
                       </div>
                     );
                   })}
@@ -307,7 +302,7 @@ export function ModelLab() {
         <Card>
           <SectionLabel>Feature Importance — Avg. |SHAP|</SectionLabel>
           {!stats || stats.top_features.length === 0 ? (
-            <p className="text-sm text-slate-400">
+            <p className="text-sm text-ink/40">
               {modelStats.isLoading
                 ? "Loading…"
                 : "No prediction data yet. Run predictions to populate."}
@@ -316,19 +311,19 @@ export function ModelLab() {
             <div className="space-y-3">
               {stats.top_features.map((f, i) => (
                 <div key={f.feature_name} className="flex items-center gap-2.5">
-                  <span className="font-mono text-xs text-slate-400 w-4 shrink-0 text-right">
+                  <span className="font-mono text-xs text-ink/40 w-4 shrink-0 text-right">
                     {i + 1}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <div className="text-xs text-slate-700 truncate mb-1">{f.humanized_label}</div>
-                    <div className="h-2 bg-slate-100 rounded-full overflow-hidden">
+                    <div className="text-xs text-ink/80 truncate mb-1">{f.humanized_label}</div>
+                    <div className="h-2 bg-tint rounded-full overflow-hidden">
                       <div
-                        className="h-full rounded-full bg-brand-500 transition-[width] duration-500"
+                        className="h-full rounded-full bg-ink transition-[width] duration-500"
                         style={{ width: `${(f.avg_importance / maxImportance) * 100}%` }}
                       />
                     </div>
                   </div>
-                  <span className="font-mono text-xs text-slate-500 w-12 text-right shrink-0">
+                  <span className="font-mono text-xs text-ink/50 w-12 text-right shrink-0">
                     {f.avg_importance.toFixed(3)}
                   </span>
                 </div>
@@ -341,7 +336,7 @@ export function ModelLab() {
       {/* ── Retrain ────────────────────────────────────────────────────────── */}
       <Card>
         <SectionLabel>Retrain Model</SectionLabel>
-        <p className="text-xs text-slate-400 mb-4 leading-relaxed">
+        <p className="text-xs text-ink/40 mb-4 leading-relaxed">
           Upload a CSV matching the training schema. Expected columns:{" "}
           <span className="font-mono">
             patient_id, age, gender, weight_kg, height_cm, bmi,
@@ -360,8 +355,8 @@ export function ModelLab() {
             className={[
               "flex-1 min-w-[200px] border-2 border-dashed rounded-lg px-4 py-4 cursor-pointer transition-colors",
               retrainFile
-                ? "border-brand-400 bg-brand-50"
-                : "border-slate-200 hover:border-slate-300 bg-slate-50/50",
+                ? "border-ink/40 bg-tint"
+                : "border-hairline hover:border-ink/30 bg-tint/50",
             ].join(" ")}
             onClick={() => fileInputRef.current?.click()}
           >
@@ -377,13 +372,13 @@ export function ModelLab() {
             />
             {retrainFile ? (
               <div className="flex items-center gap-2">
-                <span className="text-sm text-brand-700 font-medium truncate">{retrainFile.name}</span>
-                <span className="text-xs text-slate-400 shrink-0">
+                <span className="text-sm text-ink font-medium truncate">{retrainFile.name}</span>
+                <span className="text-xs text-ink/40 shrink-0">
                   ({(retrainFile.size / 1024).toFixed(0)} KB)
                 </span>
               </div>
             ) : (
-              <p className="text-sm text-slate-400">Click to select CSV…</p>
+              <p className="text-sm text-ink/40">Click to select CSV…</p>
             )}
           </div>
 
@@ -398,7 +393,7 @@ export function ModelLab() {
         </div>
 
         {retrain.isPending && (
-          <div className="mt-4 text-sm text-slate-500 flex items-center gap-2">
+          <div className="mt-4 text-sm text-ink/50 flex items-center gap-2">
             <svg className="animate-spin h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none">
               <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -415,24 +410,24 @@ export function ModelLab() {
 
         {retrainResult && (
           <div className="mt-4 p-4 rounded-lg bg-risk-low-bg border border-risk-low-border">
-            <div className="font-display text-[0.65rem] font-semibold tracking-allcaps uppercase text-risk-low mb-3">
+            <div className="font-display text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-risk-low mb-3">
               Training Complete
             </div>
             <div className="grid grid-cols-3 gap-4">
               <div>
-                <div className="text-xs text-slate-400 mb-0.5">Algorithm</div>
-                <div className="font-mono text-sm font-semibold text-slate-800 capitalize">
+                <div className="text-xs text-ink/40 mb-0.5">Algorithm</div>
+                <div className="font-mono text-sm font-semibold text-ink capitalize">
                   {retrainResult.algorithm}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-slate-400 mb-0.5">CV AUC</div>
+                <div className="text-xs text-ink/40 mb-0.5">CV AUC</div>
                 <div className="font-mono text-2xl font-bold text-risk-low">
                   {retrainResult.cv_auc?.toFixed(3) ?? "—"}
                 </div>
               </div>
               <div>
-                <div className="text-xs text-slate-400 mb-0.5">Test AUC</div>
+                <div className="text-xs text-ink/40 mb-0.5">Test AUC</div>
                 <div className="font-mono text-2xl font-bold text-risk-low">
                   {retrainResult.test_auc?.toFixed(3) ?? "—"}
                 </div>
@@ -442,7 +437,7 @@ export function ModelLab() {
         )}
       </Card>
 
-      <footer className="text-xs text-slate-400 italic border-t border-slate-200 pt-4">
+      <footer className="text-xs text-ink/40 italic border-t border-hairline pt-4">
         Decision-support only — not a substitute for clinical judgment.
       </footer>
     </div>

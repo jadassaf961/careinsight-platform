@@ -21,24 +21,24 @@ export function SimulatedPhone({ patientId, checkins }: { patientId: string; che
   const sent = checkins.filter((c) => c.status === "sent" || c.status === "responded");
 
   return (
-    <div className="rounded-xl border border-emerald-200 bg-emerald-50/40 p-4">
+    <div className="rounded-xl border border-risk-low-border bg-risk-low-bg/40 p-4">
       <div className="flex items-center gap-2 mb-3">
-        <span className="h-2 w-2 rounded-full bg-emerald-500" />
-        <span className="font-display text-[0.65rem] font-semibold tracking-allcaps uppercase text-emerald-700">
+        <span className="h-2 w-2 rounded-full bg-risk-low" />
+        <span className="font-display text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-risk-low">
           Simulated patient phone — demo mode
         </span>
       </div>
       {sent.length === 0 && (
-        <p className="text-xs text-slate-500">No check-ins sent yet. Messages appear here once dispatched.</p>
+        <p className="text-xs text-ink/50">No check-ins sent yet. Messages appear here once dispatched.</p>
       )}
       <div className="space-y-3">
         {sent.map((c) => (
           <div key={c.id} className="space-y-2">
-            <div className="max-w-[85%] rounded-lg rounded-tl-none bg-white border border-slate-200 p-2.5 text-xs text-slate-700 whitespace-pre-wrap">
+            <div className="max-w-[85%] rounded-lg rounded-tl-none bg-paper border border-hairline p-2.5 text-xs text-ink/80 whitespace-pre-wrap">
               {c.sent_body}
             </div>
             {c.responses.map((r) => (
-              <div key={r.id} className="max-w-[85%] ml-auto rounded-lg rounded-tr-none bg-emerald-100 border border-emerald-200 p-2.5 text-xs text-slate-800">
+              <div key={r.id} className="max-w-[85%] ml-auto rounded-lg rounded-tr-none bg-risk-low-bg border border-risk-low-border p-2.5 text-xs text-ink">
                 {r.raw_text}
               </div>
             ))}
@@ -52,7 +52,7 @@ export function SimulatedPhone({ patientId, checkins }: { patientId: string; che
                 }}
               >
                 <input
-                  className="flex-1 border border-slate-300 rounded-md px-2.5 py-1.5 text-xs bg-white focus:outline-none focus:border-brand-600"
+                  className="flex-1 border-0 border-b border-hairline rounded-none px-0 py-1.5 text-xs bg-transparent focus:outline-none focus:border-ink placeholder:text-ink/30"
                   placeholder="Type the patient's reply…"
                   value={drafts[c.id] ?? ""}
                   onChange={(e) => setDrafts((d) => ({ ...d, [c.id]: e.target.value }))}
@@ -60,7 +60,7 @@ export function SimulatedPhone({ patientId, checkins }: { patientId: string; che
                 <button
                   type="submit"
                   disabled={reply.isPending}
-                  className="text-xs font-medium bg-emerald-600 text-white rounded-md px-3 py-1.5 hover:bg-emerald-700 disabled:opacity-50"
+                  className="text-xs font-display font-semibold lowercase bg-risk-low text-white rounded-full px-3.5 py-1.5 hover:opacity-90 disabled:opacity-50"
                 >
                   Reply
                 </button>

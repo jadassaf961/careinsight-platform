@@ -1,6 +1,6 @@
 import { Suspense, lazy } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "@/auth/AuthContext";
+import { AuthProvider } from "@/auth/AuthContext";
 import { RequireAuth } from "@/auth/RequireAuth";
 import { AppShell } from "@/components/AppShell";
 import { Login } from "@/pages/Login";
@@ -15,9 +15,9 @@ import { WardView } from "@/pages/WardView";
 const Landing = lazy(() => import("@/pages/Landing"));
 
 function PublicHome() {
-  const { user, loading } = useAuth();
-  if (loading) return null;
-  if (user) return <Navigate to="/ward" replace />;
+  // The marketing landing page lives at "/" and is always public — logged-in
+  // users reach it by clicking the wordmark, so we intentionally do not bounce
+  // them into the app here. Login redirects into the app explicitly.
   return (
     <Suspense fallback={null}>
       <Landing />

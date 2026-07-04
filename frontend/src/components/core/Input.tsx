@@ -18,9 +18,9 @@ interface InputProps {
 }
 
 const sizeClasses: Record<string, string> = {
-  sm: 'text-sm py-1.5 px-2.5',
-  md: 'text-sm py-2 px-3',
-  lg: 'text-base py-2.5 px-4',
+  sm: 'text-sm py-1.5',
+  md: 'text-sm py-2',
+  lg: 'text-lg py-2.5',
 };
 
 export function Input({
@@ -46,7 +46,7 @@ export function Input({
       {label && (
         <label
           htmlFor={inputId}
-          className="text-sm font-medium text-slate-700 flex gap-0.5"
+          className="font-display text-[0.65rem] font-semibold tracking-[0.2em] uppercase text-ink/40 flex gap-0.5"
         >
           {label}
           {required && <span className="text-risk-high">*</span>}
@@ -55,7 +55,7 @@ export function Input({
 
       <div className="relative">
         {icon && (
-          <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none flex items-center">
+          <span className="absolute left-0 top-1/2 -translate-y-1/2 text-ink/40 pointer-events-none flex items-center">
             {icon}
           </span>
         )}
@@ -69,19 +69,20 @@ export function Input({
           required={required}
           autoComplete={autoComplete}
           className={[
-            'w-full font-sans rounded-md border bg-white text-slate-800',
-            'transition-all duration-150 outline-none',
-            'focus:shadow-focus focus:border-brand-600',
-            'disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed',
-            error ? 'border-risk-high focus:shadow-focus-danger' : 'border-slate-300',
-            icon ? 'pl-9' : '',
+            'w-full font-sans bg-transparent text-ink placeholder:text-ink/30',
+            'border-0 border-b rounded-none px-0',
+            'transition-colors duration-150 outline-none',
+            'focus:border-ink',
+            'disabled:text-ink/40 disabled:cursor-not-allowed',
+            error ? 'border-risk-high' : 'border-hairline',
+            icon ? 'pl-7' : '',
             sizeClasses[size],
           ].join(' ')}
         />
       </div>
 
       {(error || helper) && (
-        <p className={`text-xs m-0 ${error ? 'text-risk-high' : 'text-slate-500'}`}>
+        <p className={`text-xs m-0 ${error ? 'text-risk-high' : 'text-ink/50'}`}>
           {error || helper}
         </p>
       )}
