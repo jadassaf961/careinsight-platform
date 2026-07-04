@@ -1,4 +1,4 @@
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { Link, NavLink, Outlet, useLocation } from "react-router-dom";
 import { useAuth } from "@/auth/AuthContext";
 import { DemoBadge } from "@/components/core/DemoBadge";
 import { PageFade } from "@/lib/appMotion";
@@ -27,7 +27,13 @@ export function AppShell() {
     <div className="min-h-screen flex bg-paper">
       <aside className="w-60 flex flex-col bg-paper border-r border-hairline shrink-0">
         <div className="px-6 py-5">
-          <span className="font-display text-lg font-bold tracking-tight text-ink">careinsight</span>
+          <Link
+            to="/"
+            aria-label="careinsight — back to home"
+            className="font-display text-lg font-bold tracking-tight text-ink hover:text-ink/60 transition-colors duration-150"
+          >
+            careinsight
+          </Link>
         </div>
 
         <nav className="flex-1 px-3 space-y-0.5">
